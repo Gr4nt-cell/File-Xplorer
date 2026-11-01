@@ -21,7 +21,10 @@ items=[
  ('org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar','maven'),
  ('com/android/tools/build/apksig/8.7.3/apksig-8.7.3.jar','google'),
  ('dev/rikka/shizuku/api/13.1.5/api-13.1.5.aar','maven'),
- ('dev/rikka/shizuku/provider/13.1.5/provider-13.1.5.aar','maven')]
+ ('dev/rikka/shizuku/provider/13.1.5/provider-13.1.5.aar','maven'),
+ ('dev/rikka/shizuku/aidl/13.1.5/aidl-13.1.5.aar','maven'),
+ ('dev/rikka/shizuku/shared/13.1.5/shared-13.1.5.aar','maven'),
+ ('androidx/annotation/annotation/1.3.0/annotation-1.3.0.jar','google')]
 expected={}
 lock=ROOT/'dependency-lock.json'
 if lock.exists():expected={r['name']:r['sha256'] for r in json.loads(lock.read_text())}
