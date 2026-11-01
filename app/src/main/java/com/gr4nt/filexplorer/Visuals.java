@@ -31,6 +31,18 @@ public final class Visuals {
     case "plus":c.drawLine(12,4,12,20,p);c.drawLine(4,12,20,12,p);break;
     case "info":c.drawCircle(12,12,9,p);p.setStyle(Paint.Style.FILL);c.drawCircle(12,7,1.2f,p);p.setStyle(Paint.Style.STROKE);c.drawLine(12,11,12,17,p);break;
     case "more":p.setStyle(Paint.Style.FILL);for(int i=0;i<3;i++)c.drawCircle(12,5+i*7,1.6f,p);break;
+     case "select_all":for(int i=0;i<4;i++){float x=2+(i%2)*10,y=2+(i/2)*10;c.drawRoundRect(x,y,x+8,y+8,1.5f,1.5f,p);path.moveTo(x+1.5f,y+4);path.lineTo(x+3.4f,y+6);path.lineTo(x+6.8f,y+1.5f);c.drawPath(path,p);path.reset();}break;
+     case "clear_selection":c.drawRoundRect(3,3,17,19,2,2,p);c.drawCircle(17,17,5,p);c.drawLine(15,15,19,19,p);c.drawLine(19,15,15,19,p);break;
+     case "archive_iso":c.drawRoundRect(3,2,15,19,2,2,p);c.drawLine(6,7,12,7,p);c.drawLine(6,10,12,10,p);c.drawLine(6,13,10,13,p);c.drawCircle(17,17,5,p);c.drawCircle(17,17,1.3f,p);break;
+     case "delete_selected":c.drawRoundRect(2,4,10,12,1,1,p);path.moveTo(3.5f,8);path.lineTo(5.5f,10);path.lineTo(8.5f,6);c.drawPath(path,p);c.drawLine(13,7,22,7,p);c.drawLine(15,5,20,5,p);c.drawRoundRect(14,8,21,21,1,1,p);c.drawLine(16,11,16,18,p);c.drawLine(19,11,19,18,p);break;
+     case "copy":c.drawRoundRect(7,2,19,16,2,2,p);c.drawRoundRect(3,7,15,22,2,2,p);break;
+     case "paste":c.drawRoundRect(4,5,20,22,2,2,p);c.drawRoundRect(8,2,16,7,2,2,p);c.drawLine(8,11,16,11,p);c.drawLine(8,15,16,15,p);c.drawLine(8,19,14,19,p);break;
+     case "move":c.drawRoundRect(7,7,17,17,1,1,p);c.drawLine(12,2,12,7,p);c.drawLine(10,4,12,2,p);c.drawLine(14,4,12,2,p);c.drawLine(12,17,12,22,p);c.drawLine(10,20,12,22,p);c.drawLine(14,20,12,22,p);c.drawLine(2,12,7,12,p);c.drawLine(4,10,2,12,p);c.drawLine(4,14,2,12,p);c.drawLine(17,12,22,12,p);c.drawLine(20,10,22,12,p);c.drawLine(20,14,22,12,p);break;
+     case "refresh":c.drawArc(new RectF(3,3,21,21),-45,145,false,p);c.drawArc(new RectF(3,3,21,21),135,145,false,p);path.moveTo(17,3);path.lineTo(21,4);path.lineTo(20,8);path.moveTo(7,21);path.lineTo(3,20);path.lineTo(4,16);c.drawPath(path,p);break;
+     case "sort_name":p.setStyle(Paint.Style.FILL);p.setTextSize(8);c.drawText("A",2,10,p);c.drawText("Z",2,20,p);p.setStyle(Paint.Style.STROKE);c.drawLine(18,4,18,19,p);path.moveTo(15,16);path.lineTo(18,20);path.lineTo(21,16);c.drawPath(path,p);break;
+     case "sort_date":c.drawRoundRect(2,4,20,21,2,2,p);c.drawLine(2,9,20,9,p);c.drawLine(7,2,7,6,p);c.drawLine(15,2,15,6,p);c.drawCircle(17,17,5,p);c.drawLine(17,14,17,17,p);c.drawLine(17,17,19,18,p);break;
+     case "sort_size":c.drawLine(3,6,18,6,p);c.drawLine(3,11,14,11,p);c.drawLine(3,16,10,16,p);c.drawLine(20,4,20,19,p);path.moveTo(17,16);path.lineTo(20,20);path.lineTo(23,16);c.drawPath(path,p);break;
+     case "panel":c.drawRoundRect(2,4,10,20,1.5f,1.5f,p);c.drawRoundRect(14,4,22,20,1.5f,1.5f,p);break;
     case "image":c.drawRoundRect(3,3,21,21,4,4,p);c.drawCircle(8,8,1.5f,p);path.moveTo(4,18);path.lineTo(10,12);path.lineTo(14,16);path.lineTo(17,12);path.lineTo(21,16);c.drawPath(path,p);break;
     case "video":c.drawRoundRect(3,4,21,20,4,4,p);path.moveTo(10,8);path.lineTo(16,12);path.lineTo(10,16);path.close();c.drawPath(path,p);break;
     case "audio":path.moveTo(9,17);path.lineTo(9,5);path.lineTo(20,3);path.lineTo(20,15);c.drawPath(path,p);c.drawOval(3,16,9,21,p);c.drawOval(14,14,20,19,p);break;
