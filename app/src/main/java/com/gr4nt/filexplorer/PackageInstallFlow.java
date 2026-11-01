@@ -69,7 +69,7 @@ public final class PackageInstallFlow {
         IntentFilter filter = new IntentFilter(action);
         try {
             if (Build.VERSION.SDK_INT >= 33) {
-                activity.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED, main);
+                activity.registerReceiver(receiver, filter, null, main, Context.RECEIVER_NOT_EXPORTED);
             } else {
                 activity.registerReceiver(receiver, filter, null, main);
             }

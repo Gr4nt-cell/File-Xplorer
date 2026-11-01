@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.Environment;
+import android.os.IInterface;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /** Restricted Shizuku user service for the shared Android/data and Android/obb folders. */
-public final class ShizukuFileAccessService extends Binder {
+public final class ShizukuFileAccessService extends Binder implements IInterface {
     public static final String DESCRIPTOR = "com.gr4nt.filexplorer.IProtectedStorage";
     public static final int SET_ROOTS = IBinder.FIRST_CALL_TRANSACTION;
     public static final int LIST = IBinder.FIRST_CALL_TRANSACTION + 1;
@@ -30,6 +31,8 @@ public final class ShizukuFileAccessService extends Binder {
     public ShizukuFileAccessService() {
         attachInterface(this, DESCRIPTOR);
     }
+
+    @Override public IBinder asBinder() { return this; }
 
     @Override
     protected boolean onTransact(int code, Parcel data, Parcel reply, int flags)
