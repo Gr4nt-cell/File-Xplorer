@@ -34,6 +34,7 @@ public final class Visuals {
      case "select_all":for(int i=0;i<4;i++){float x=2+(i%2)*10,y=2+(i/2)*10;c.drawRoundRect(x,y,x+8,y+8,1.5f,1.5f,p);path.moveTo(x+1.5f,y+4);path.lineTo(x+3.4f,y+6);path.lineTo(x+6.8f,y+1.5f);c.drawPath(path,p);path.reset();}break;
      case "clear_selection":c.drawRoundRect(3,3,17,19,2,2,p);c.drawCircle(17,17,5,p);c.drawLine(15,15,19,19,p);c.drawLine(19,15,15,19,p);break;
      case "archive_iso":c.drawRoundRect(3,2,15,19,2,2,p);c.drawLine(6,7,12,7,p);c.drawLine(6,10,12,10,p);c.drawLine(6,13,10,13,p);c.drawCircle(17,17,5,p);c.drawCircle(17,17,1.3f,p);break;
+     case "extract":c.drawRoundRect(3,2,19,20,2,2,p);c.drawLine(6,6,16,6,p);c.drawLine(6,10,16,10,p);c.drawLine(6,14,11,14,p);c.drawLine(15,13,15,21,p);path.moveTo(12,18);path.lineTo(15,21);path.lineTo(18,18);c.drawPath(path,p);break;
      case "delete_selected":c.drawRoundRect(2,4,10,12,1,1,p);path.moveTo(3.5f,8);path.lineTo(5.5f,10);path.lineTo(8.5f,6);c.drawPath(path,p);c.drawLine(13,7,22,7,p);c.drawLine(15,5,20,5,p);c.drawRoundRect(14,8,21,21,1,1,p);c.drawLine(16,11,16,18,p);c.drawLine(19,11,19,18,p);break;
      case "copy":c.drawRoundRect(7,2,19,16,2,2,p);c.drawRoundRect(3,7,15,22,2,2,p);break;
      case "paste":c.drawRoundRect(4,5,20,22,2,2,p);c.drawRoundRect(8,2,16,7,2,2,p);c.drawLine(8,11,16,11,p);c.drawLine(8,15,16,15,p);c.drawLine(8,19,14,19,p);break;
