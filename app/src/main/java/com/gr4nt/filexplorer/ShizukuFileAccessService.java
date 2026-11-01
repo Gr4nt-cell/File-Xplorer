@@ -148,6 +148,9 @@ public final class ShizukuFileAccessService extends Binder implements IInterface
     private void rename(String path, String name) throws IOException {
         validName(name);
         File source = allowed(path);
+        if (source.equals(new File(dataRoot)) || source.equals(new File(obbRoot))) {
+            throw new IOException("Protected Android/data and Android/obb roots cannot be renamed.");
+        }
         File parent = source.getParentFile();
         if (parent == null) throw new IOException("Cannot rename a protected storage root.");
         File target = allowed(new File(parent, name).getPath());

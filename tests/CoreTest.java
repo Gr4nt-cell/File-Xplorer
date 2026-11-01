@@ -9,6 +9,10 @@ public class CoreTest {
    check(RootShell.backingPath("/storage/emulated/10/Android/obb","/storage/emulated/10").equals("/data/media/10/Android/obb"),"Map secondary-user shared storage correctly");
    check(RootShell.backingPath("/storage/emulated/01/file","/storage/emulated/0").equals("/storage/emulated/01/file"),"Do not map sibling storage paths");
    check(RootShell.visiblePath("/data/media/0/Android/obb","/storage/emulated/0").equals("/storage/emulated/0/Android/obb"),"Show root backing entries as normal shared-storage paths");
+    check(RootShell.preferVisiblePath(0,"",0,"metadata\nfile"),"Use mounted storage when backing listing is empty but visible storage has entries");
+    check(!RootShell.preferVisiblePath(0,"metadata\nfile",0,"other"),"Prefer a populated backing listing");
+    check(RootShell.preferVisiblePath(2,"permission denied",0,""),"Fall back to an accessible mounted directory even when empty");
+    check(!RootShell.preferVisiblePath(0,"",2,"permission denied"),"Keep a readable empty backing directory when mounted path is unavailable");
   fails(()->FileSafety.child(root,"../escape"),"Reject traversal");fails(()->FileSafety.child(root,"/absolute"),"Reject absolute path");fails(()->FileSafety.child(root,"C:\\escape"),"Reject Windows absolute path");fails(()->FileSafety.rejectDescendant(source,new File(sub,"archive.zip")),"Reject copy into source");
   File outDir=new File(root,"escape-check");outDir.mkdir();Path link=new File(outDir,"link").toPath();Files.createSymbolicLink(link,root.toPath());fails(()->FileSafety.child(outDir,"link/evil"),"Reject symlink traversal");
   for(String format:new String[]{"zip","7z","tar","tar.gz","tar.xz","tar.bz2","iso"}){

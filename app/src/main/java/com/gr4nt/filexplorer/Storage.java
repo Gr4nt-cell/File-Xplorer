@@ -39,14 +39,15 @@ public final class Storage {
     return out;
    }finally{FtpSessions.disconnect(client);}
   }
- List<Node> rootList(Node parent)throws IOException{
-   String external=externalRoot(),backing=rootPath(parent.path);RootShell.Result r=RootShell.run(rootListCommand(backing),true,45);
-   if(!backing.equals(parent.path)){if(r.code==0){rootBackingKnown=true;rootBackingAvailable=true;}else{RootShell.Result fallback=RootShell.run(rootListCommand(parent.path),true,45);if(fallback.code==0){rootBackingKnown=true;rootBackingAvailable=false;r=fallback;}else throw new IOException("Root could not list "+parent.path+". Check that your root manager granted File Xplorer access.\n"+r.text+"\n"+fallback.text);}}
+  List<Node> rootList(Node parent)throws IOException{
+   String backing=RootShell.backingPath(parent.path,externalRoot());RootShell.Result r=RootShell.run(rootListCommand(backing),true,45);
+   if(!backing.equals(parent.path)){RootShell.Result visible=RootShell.run(rootListCommand(parent.path),true,45);if(RootShell.preferVisiblePath(r.code,r.text,visible.code,visible.text)){rootBackingKnown=true;rootBackingAvailable=false;r=visible;}else if(r.code==0){rootBackingKnown=true;rootBackingAvailable=true;}else throw new IOException("Root could not list "+parent.path+". Check that your root manager granted File Xplorer access.\nBacking path: "+r.text+"\nMounted path: "+visible.text);}
    if(r.code!=0)throw new IOException("Root could not list "+parent.path+". Check that your root manager granted File Xplorer access.\n"+r.text);String[] rows=r.text.split("\n");List<Node> out=new ArrayList<>();
    for(int i=0;i+1<rows.length;i+=2)try{String[] meta=rows[i].split("\\|");long mode=Long.parseLong(meta[0],16);String p=RootShell.visiblePath(new String(Base64.getDecoder().decode(rows[i+1]),"UTF-8"),external);out.add(new Node(p,new File(p).getName(),(mode&0170000)==0040000,Long.parseLong(meta[1]),Long.parseLong(meta[2])*1000,true));}catch(Exception e){throw new IOException("Root directory response could not be read: "+rows[i]);}return out;
  }
-  String rootListCommand(String path){String q=RootShell.quote(path);return "test -d "+q+" && test -r "+q+" && test -x "+q+" || exit 1; for f in "+q+"/.[!.]* "+q+"/..?* "+q+"/*; do [ -e \"$f\" ] || [ -L \"$f\" ] || continue; stat -c '%f|%s|%Y|%a|%u|%g' \"$f\"; printf %s \"$f\" | base64 | tr -d '\\n'; printf '\\n'; done";}
+   String rootListCommand(String path){String q=RootShell.quote(path);return "test -d "+q+" && test -r "+q+" && test -x "+q+" || exit 1; for f in "+q+"/.[!.]* "+q+"/..?* "+q+"/*; do [ -e \"$f\" ] || [ -L \"$f\" ] || continue; stat -c '%f|%s|%Y|%a|%u|%g' \"$f\" || { echo 'Root could not inspect a directory entry' >&2; exit 2; }; encoded=$(printf %s \"$f\" | base64 | tr -d '\\n') || exit 2; printf '%s\\n' \"$encoded\" || exit 2; done";}
   String externalRoot(){return android.os.Environment.getExternalStorageDirectory().getAbsolutePath();}
+  boolean protectedSharedRoot(String path)throws IOException{String target=new File(path).getCanonicalPath();File shared=new File(externalRoot()).getCanonicalFile();return target.equals(new File(shared,"Android/data").getCanonicalPath())||target.equals(new File(shared,"Android/obb").getCanonicalPath());}
   public String rootPath(String path){return rootBackingKnown&&!rootBackingAvailable?path:RootShell.backingPath(path,externalRoot());}
  public InputStream read(Node n)throws IOException{
    if(n.ftp()){FTPClient client=ftp.open(n.path);InputStream in=client.retrieveFileStream(FtpSessions.remotePath(n.path));if(in==null){String message=client.getReplyString();FtpSessions.disconnect(client);throw new IOException("FTP could not open the file: "+message);}return new FilterInputStream(in){boolean closed;@Override public void close()throws IOException{if(closed)return;closed=true;IOException failure=null;try{super.close();if(!client.completePendingCommand())failure=new IOException("FTP transfer failed: "+client.getReplyString());}catch(IOException e){failure=e;}finally{FtpSessions.disconnect(client);}if(failure!=null)throw failure;}};}
@@ -74,6 +75,7 @@ public final class Storage {
  }
  public void rename(Node n,String name)throws IOException{
   validName(name);
+   if(n.root&&protectedSharedRoot(n.path))throw new IOException("The Android/data and Android/obb roots cannot be renamed. Rename items inside them instead.");
    if(n.ftp()){String oldPath=FtpSessions.remotePath(n.path);int slash=oldPath.lastIndexOf('/');String parent=slash<=0?"/":oldPath.substring(0,slash);FTPClient client=ftp.open(n.path);try{if(!client.rename(oldPath,FtpSessions.childPath(parent,name)))throw new IOException("FTP server refused the rename: "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
   if(n.saf()){if(DocumentsContract.renameDocument(resolver,Uri.parse(n.path),name)==null)throw new IOException("Rename refused");return;}
    if(n.shizuku){shizuku.rename(n.path,name);return;}
@@ -84,6 +86,7 @@ public final class Storage {
    if(n.ftp()){if(n.dir)for(Node child:list(n))delete(child);FTPClient client=ftp.open(n.path);try{String remote=FtpSessions.remotePath(n.path);boolean ok=n.dir?client.removeDirectory(remote):client.deleteFile(remote);if(!ok)throw new IOException("FTP server refused to delete "+n.name+": "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
   if(n.saf()){if(!DocumentsContract.deleteDocument(resolver,Uri.parse(n.path)))throw new IOException("Delete refused");return;}
    if(n.shizuku){if(n.dir)for(Node child:list(n))delete(child);shizuku.delete(n.path);return;}
+   if(n.root&&protectedSharedRoot(n.path))throw new IOException("The Android/data and Android/obb roots cannot be deleted. Delete items inside them instead.");
   String path=n.root?new File(n.path).toPath().toAbsolutePath().normalize().toString():new File(n.path).getCanonicalPath();if(path.equals("/")||path.equals("/storage")||path.equals("/storage/emulated/0"))throw new IOException("Storage roots cannot be deleted");
    if(n.root){RootShell.check("rm -rf -- "+RootShell.quote(rootPath(path)));return;}
   if(Files.isSymbolicLink(new File(n.path).toPath())){Files.delete(new File(n.path).toPath());return;}

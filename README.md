@@ -12,7 +12,7 @@ Choose **Settings → Appearance → Follow device theme / Light glass / Dark gl
 
 App-owned image/video viewers use floating rounded glass toolbars, with a blurred sample of the media behind the controls. Images support fit, pinch-to-zoom, pan and rotate; video supports play/pause, seeking, skip, mute and speed presets. Sharing is user-initiated through Android's chooser. Codec support depends on the device; other formats can still use external viewers. System permission dialogs, root-manager prompts and external apps retain their own styling.
 
-**Android / data** and **Android / obb** shortcuts use the existing root backend, including their subfolders. They appear on the overview, in the mobile overflow menu, in tablet locations and in Settings. Choose a shortcut, approve `su` in the root manager and browse normally. This requires an already rooted device; Shizuku transport is not included. Root is off again after restarting the app.
+**Android / data** and **Android / obb** shortcuts support user-approved root or Shizuku access, including subfolders. They appear on the overview, in the mobile overflow menu, in tablet locations and in Settings. Android restricts normal file-picker access to these locations on newer versions, so the app does not claim ordinary storage permission is enough. Root requires an already rooted device and is off again after restarting the app; Shizuku requires its service and a user approval. Android, the device vendor, SELinux and the chosen access service can still deny individual operations.
 
 ## Search
 

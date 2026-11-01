@@ -23,7 +23,7 @@ EDITORS
 Text and hex editing up to 2 MB; find/replace with optional regex; atomic replacement for local files where supported; backups in cache. UTF-8 and UTF-16 are recognized. Binary XML decoding is an inspection view, not an editable build round trip.
 
 ROOT
-Android/data and Android/obb shortcuts appear on the overview, in the mobile overflow menu, in tablet locations and in Settings. These shortcuts request su and carry root transport into all subfolders. Uses su only after explicit enablement. Browse/copy/edit with root transport; shell, chmod/chown, read-only image loop mount and unmount. This app does not root a device. Android/data, system partitions, SELinux, read-only filesystems and mount support remain controlled by Android and the root manager. Root operations have not been exercised on a rooted device. Shizuku transport is not included in this version.
+Android/data and Android/obb shortcuts appear on the overview, in the mobile overflow menu, in tablet locations and in Settings. They support explicit, session-only su access and a Shizuku user service limited to those two folder trees. Android and device-vendor restrictions can still deny access; ordinary storage permission and the document-tree picker cannot bypass those restrictions. Root operations have not been exercised on a rooted device, and Shizuku operations require an installed, running service and user approval.
 
 NETWORK / PARITY
 No network-storage clients, cloud accounts, Wi-Fi transfer server or remote synchronization are included. This is an original native file-manager build, not complete MT Manager / 7-Zip / PowerISO feature parity. Check each supported format above rather than assuming another product's full feature set.
