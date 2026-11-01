@@ -1,9 +1,9 @@
 <resources>
  <style name="GlassDialogLight" parent="android:style/Theme.Material.Light.Dialog.Alert">
-  <item name="android:colorAccent">#2478F4</item><item name="android:textColorPrimary">#172842</item><item name="android:textColorSecondary">#718198</item><item name="android:windowIsTranslucent">true</item><item name="android:windowBackground">@android:color/transparent</item><item name="android:windowNoTitle">false</item><item name="android:windowMinWidthMajor">88%</item><item name="android:windowMinWidthMinor">88%</item>
+  <item name="android:colorAccent">#BD674A</item><item name="android:textColorPrimary">#292B2A</item><item name="android:textColorSecondary">#77766F</item><item name="android:windowIsTranslucent">true</item><item name="android:windowBackground">@android:color/transparent</item><item name="android:windowNoTitle">false</item><item name="android:windowMinWidthMajor">88%</item><item name="android:windowMinWidthMinor">88%</item>
  </style>
  <style name="GlassDialogDark" parent="android:style/Theme.Material.Dialog.Alert">
-  <item name="android:colorAccent">#8AB8FF</item><item name="android:textColorPrimary">#EDF3FF</item><item name="android:textColorSecondary">#A5B5CE</item><item name="android:windowIsTranslucent">true</item><item name="android:windowBackground">@android:color/transparent</item><item name="android:windowMinWidthMajor">88%</item><item name="android:windowMinWidthMinor">88%</item>
+  <item name="android:colorAccent">#E99A7E</item><item name="android:textColorPrimary">#F3F0E9</item><item name="android:textColorSecondary">#AAA9A1</item><item name="android:windowIsTranslucent">true</item><item name="android:windowBackground">@android:color/transparent</item><item name="android:windowMinWidthMajor">88%</item><item name="android:windowMinWidthMinor">88%</item>
  </style>
  <style name="GlassMotion"><item name="android:windowEnterAnimation">@anim/glass_enter</item><item name="android:windowExitAnimation">@anim/glass_exit</item></style>
 </resources>
