@@ -40,7 +40,7 @@ public final class Storage {
    }finally{FtpSessions.disconnect(client);}
   }
   List<Node> rootList(Node parent)throws IOException{
-   String backing=RootShell.backingPath(parent.path,externalRoot());RootShell.Result r=RootShell.run(rootListCommand(backing),true,45);
+   String external=externalRoot(),backing=RootShell.backingPath(parent.path,external);RootShell.Result r=RootShell.run(rootListCommand(backing),true,45);
    if(!backing.equals(parent.path)){RootShell.Result visible=RootShell.run(rootListCommand(parent.path),true,45);if(RootShell.preferVisiblePath(r.code,r.text,visible.code,visible.text)){rootBackingKnown=true;rootBackingAvailable=false;r=visible;}else if(r.code==0){rootBackingKnown=true;rootBackingAvailable=true;}else throw new IOException("Root could not list "+parent.path+". Check that your root manager granted File Xplorer access.\nBacking path: "+r.text+"\nMounted path: "+visible.text);}
    if(r.code!=0)throw new IOException("Root could not list "+parent.path+". Check that your root manager granted File Xplorer access.\n"+r.text);String[] rows=r.text.split("\n");List<Node> out=new ArrayList<>();
    for(int i=0;i+1<rows.length;i+=2)try{String[] meta=rows[i].split("\\|");long mode=Long.parseLong(meta[0],16);String p=RootShell.visiblePath(new String(Base64.getDecoder().decode(rows[i+1]),"UTF-8"),external);out.add(new Node(p,new File(p).getName(),(mode&0170000)==0040000,Long.parseLong(meta[1]),Long.parseLong(meta[2])*1000,true));}catch(Exception e){throw new IOException("Root directory response could not be read: "+rows[i]);}return out;
