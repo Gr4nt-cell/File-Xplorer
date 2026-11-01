@@ -1,0 +1,10 @@
+.deps/
+.qa/
+build/
+.gradle/
+local.properties
+*.keystore
+*.jks
+*.apk
+*.idsig
+__pycache__/

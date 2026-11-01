@@ -1,0 +1,14 @@
+{
+  "name": "File Xplorer Design Import",
+  "id": "REPLACE_WITH_FIGMA_GENERATED_PLUGIN_ID",
+  "api": "1.0.0",
+  "main": "figma-import.js",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "File Xplorer v0.2 Glass Design",
+  "id": "REPLACE_WITH_FIGMA_GENERATED_PLUGIN_ID",
+  "api": "1.0.0",
+  "main": "figma-import-v0.2.js",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}

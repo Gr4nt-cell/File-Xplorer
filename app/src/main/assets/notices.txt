@@ -1,0 +1,18 @@
+OPEN-SOURCE LIBRARIES
+
+Versions, source download URLs and SHA-256 hashes: dependency-lock.json in the source project. Full license and copyright texts: assets/licenses.
+
+Application: Apache-2.0.
+Apache Commons Compress, IO, Codec and Lang: Apache-2.0.
+Zip4j: Apache-2.0.
+XZ for Java: 0BSD / public-domain notices; see COPYING.
+Junrar: UnRAR license with its extraction-only restriction.
+Smali / Baksmali / dexlib2 / util: BSD-3-Clause.
+RE2/J: BSD-3-Clause.
+Guava and failureaccess: Apache-2.0.
+SLF4J: MIT.
+JCommander: Apache-2.0.
+ANTLR3 runtime: BSD.
+Android apksig: Apache-2.0.
+
+Dependency license terms apply to those dependencies; the application license does not replace them.

@@ -1,0 +1,14 @@
+{
+  "name": "File Xplorer Clear Studio v0.7",
+  "id": "REPLACE_WITH_FIGMA_GENERATED_PLUGIN_ID",
+  "api": "1.0.0",
+  "main": "figma-import-clear-studio.js",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}

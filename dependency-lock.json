@@ -1,0 +1,92 @@
+[
+  {
+    "name": "commons-compress-1.27.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar",
+    "sha256": "293d80f54b536b74095dcd7ea3cf0a29bbfc3402519281332495f4420d370d16"
+  },
+  {
+    "name": "commons-io-2.16.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar",
+    "sha256": "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f"
+  },
+  {
+    "name": "commons-codec-1.17.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar",
+    "sha256": "f9f6cb103f2ddc3c99a9d80ada2ae7bf0685111fd6bffccb72033d1da4e6ff23"
+  },
+  {
+    "name": "commons-lang3-3.16.0.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar",
+    "sha256": "08709dd74d602b705ce4017d26544210056a4ba583d5b20c09373406fe7a00f8"
+  },
+  {
+    "name": "re2j-1.8.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/google/re2j/re2j/1.8/re2j-1.8.jar",
+    "sha256": "7b52c72156dd7f98b3237a5b35c1d34fba381b21048c89208913ad80a45dfbd7"
+  },
+  {
+    "name": "failureaccess-1.0.1.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar",
+    "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26"
+  },
+  {
+    "name": "xz-1.10.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/tukaani/xz/1.10/xz-1.10.jar",
+    "sha256": "95c63c1a55b22dd6453890a419cc1a640f790bbf7d8ae82db1e30aefefb08888"
+  },
+  {
+    "name": "zip4j-2.11.5.jar",
+    "url": "https://repo.maven.apache.org/maven2/net/lingala/zip4j/zip4j/2.11.5/zip4j-2.11.5.jar",
+    "sha256": "fee9a941f286166d4a19719d818f20e9f3addb3cbd7291c08b67f0e0ce75a9fd"
+  },
+  {
+    "name": "junrar-7.5.5.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/github/junrar/junrar/7.5.5/junrar-7.5.5.jar",
+    "sha256": "e01b949687e2a5b4c68011c1702aa5d2cc8e6c458656ac2c91658b69cebb1bb3"
+  },
+  {
+    "name": "slf4j-api-1.7.36.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
+    "sha256": "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
+  },
+  {
+    "name": "dexlib2-2.5.2.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/smali/dexlib2/2.5.2/dexlib2-2.5.2.jar",
+    "sha256": "5a5c8982d8bd7d6e3bb1a0713049e3c78b719ec32b20f6b619885cec30a0dd61"
+  },
+  {
+    "name": "baksmali-2.5.2.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/smali/baksmali/2.5.2/baksmali-2.5.2.jar",
+    "sha256": "1ed236266d7dc4907aade0b19a34f77efac25342b63c8ace52e579039941b389"
+  },
+  {
+    "name": "smali-2.5.2.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/smali/smali/2.5.2/smali-2.5.2.jar",
+    "sha256": "136c5c4653d6531bd7b6f10f35f8691cb96432e727d30b4d5579826ee01e9419"
+  },
+  {
+    "name": "util-2.5.2.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/smali/util/2.5.2/util-2.5.2.jar",
+    "sha256": "4f580a9cff3ebb83cb3fd20bec88e37e4f183796ca652732992611620282daea"
+  },
+  {
+    "name": "guava-27.1-android.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/27.1-android/guava-27.1-android.jar",
+    "sha256": "686404f2d1d4d221911f96bd627ff60dac2226a5dfa6fb8ba517073eb97ec0ef"
+  },
+  {
+    "name": "jcommander-1.64.jar",
+    "url": "https://repo.maven.apache.org/maven2/com/beust/jcommander/1.64/jcommander-1.64.jar",
+    "sha256": "156be736199c990321d9ff77090b199629cfc9865e2d6c13f7cd291bb1641817"
+  },
+  {
+    "name": "antlr-runtime-3.5.2.jar",
+    "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar",
+    "sha256": "ce3fc8ecb10f39e9a3cddcbb2ce350d272d9cd3d0b1e18e6fe73c3b9389c8734"
+  },
+  {
+    "name": "apksig-8.7.3.jar",
+    "url": "https://dl.google.com/dl/android/maven2/com/android/tools/build/apksig/8.7.3/apksig-8.7.3.jar",
+    "sha256": "c070ed1394629d74641aa0906f60b2ffa1ee77e6366a1f93437f59717b1aeb89"
+  }
+]
