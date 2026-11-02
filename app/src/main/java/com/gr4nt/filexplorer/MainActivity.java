@@ -188,11 +188,10 @@ public final class MainActivity extends Activity {
  }
   void binaryFileMenu(Storage.Node n){items(n.name,new String[]{"View as hex","Open with a compatible app"},i->{if(i==0){edit(n,true);return;}job("Opening binary file",()->{File f=stage(n);ui.post(()->whenIdle(()->externalChooser(f)));return "Ready to open";});});}
   void externalChooser(File f){Uri uri=ShareProvider.uri(f);Intent intent=new Intent(Intent.ACTION_VIEW).setDataAndType(uri,"application/octet-stream").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);try{startActivity(Intent.createChooser(intent,"Open binary with"));}catch(ActivityNotFoundException e){textDialog("No compatible app found","Install an app that supports this binary format, then try again.");}}
-  void external(File f){Uri uri=ShareProvider.uri(f);String ext=ext(f.getName()),mime=ext.equals("apk")?"application/vnd.android.package-archive":MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);if(mime==null)mime="application/octet-stream";Intent i=new Intent(ext.equals("apk")?Intent.ACTION_INSTALL_PACKAGE:Intent.ACTION_VIEW).setDataAndType(uri,mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);try{startActivity(i);}catch(ActivityNotFoundException e){textDialog("Could not open installer","Android could not open this package. Check that the APK is valid and that installs from File Xplorer are allowed.");}}
+   void external(File f){String extension=ext(f.getName());if(extension.equals("apk")||extension.equals("xapk")){installApk(storage.node(f));return;}Uri uri=ShareProvider.uri(f);String mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);if(mime==null)mime="application/octet-stream";Intent i=new Intent(Intent.ACTION_VIEW).setDataAndType(uri,mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);try{startActivity(i);}catch(ActivityNotFoundException e){textDialog("Could not open file","No compatible app could open this file.");}}
  void installApk(Storage.Node n){
   String type=ext(n.name);if(!type.equals("apk")&&!type.equals("xapk")){toast("Choose an APK or XAPK file");return;}
-  if(Build.VERSION.SDK_INT>=26&&!getPackageManager().canRequestPackageInstalls()){confirm("Allow APK installs","Android will open its install permission for File Xplorer. Return here and tap the APK or XAPK again.",()->startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,Uri.parse("package:"+getPackageName()))));return;}
-  job("Preparing Android installer",()->{
+   job("Preparing in-app installer",()->{
    File source=stage(n),folder=new File(getCacheDir(),"install-"+UUID.randomUUID());if(!folder.mkdirs())throw new IOException("Could not prepare package staging.");
    List<File> apks=new ArrayList<>(),obbs=new ArrayList<>();String packageName;
    if(type.equals("apk")){
@@ -212,13 +211,26 @@ public final class MainActivity extends Activity {
     packageName=foundPackage;apks.add(base);splits.sort(Comparator.comparing(File::getName,String.CASE_INSENSITIVE_ORDER));apks.addAll(splits);
    }
    final String targetPackage=packageName;final List<File> expansionFiles=new ArrayList<>(obbs);
-   PackageInstallFlow.install(this,apks,targetPackage,ui,new PackageInstallFlow.Listener(){
-    public void onSubmitted(){toast("Android’s installer is ready. Confirm the installation there.");}
-    public void onFinished(boolean success,String message){toast(success&&!expansionFiles.isEmpty()?message+" · XAPK expansion files were not installed by File Xplorer.":message);}
-   });
-   return "Package installation submitted";
+    long packageBytes=0;for(File apk:apks)packageBytes+=apk.length();
+    String details="Package: "+targetPackage+"\nAPK files: "+apks.size()+"\nSize: "+size(packageBytes)
+      +"\n\nFile Xplorer will request root access and install this package without opening Android’s installer screen."
+      +"\nOnly install packages from sources you trust."
+      +(expansionFiles.isEmpty()?"":"\n\nThis XAPK includes expansion files. File Xplorer does not write to Android/obb, so those files will not be copied.");
+    ui.post(()->whenIdle(()->reviewRootInstall(targetPackage,apks,folder,details)));
+    return "Package prepared for review";
   });
  }
+  void reviewRootInstall(String packageName,List<File> apks,File stageFolder,String details){
+   AlertDialog dialog=new GlassDialog.Builder(this).setTitle("Review package installation").setMessage(details)
+    .setNegativeButton("Cancel",(d,w)->deleteInstallStage(stageFolder))
+    .setPositiveButton("Install with root",(d,w)->job("Installing "+packageName,()->{
+     try{RootPackageInstaller.install(apks,stageFolder,cancel);return "Installed "+packageName;}
+     finally{deleteInstallStage(stageFolder);}
+    })).create();
+   dialog.setOnCancelListener(d->deleteInstallStage(stageFolder));
+   dialog.show();
+  }
+  void deleteInstallStage(File stageFolder){try{if(stageFolder!=null&&stageFolder.exists())storage.delete(storage.node(stageFolder));}catch(Exception ignored){}}
  String ext(String name){int dot=name.lastIndexOf('.');return dot>=0?name.substring(dot+1).toLowerCase(Locale.ROOT):"";}
   File stage(Storage.Node n)throws IOException{if(!n.saf()&&!n.ftp())return new File(n.path);if(n.dir)throw new IOException("Select a file");if(n.size>getCacheDir().getUsableSpace()-32L*1024*1024)throw new IOException("Not enough temporary space to process this provider file");File folder=new File(getCacheDir(),"stage-"+UUID.randomUUID());if(!folder.mkdir())throw new IOException("Cannot prepare staging folder");File out=new File(folder,n.name);try(InputStream in=storage.read(n);OutputStream to=new FileOutputStream(out)){byte[] b=new byte[65536];int k;while((k=in.read(b))!=-1){if(cancel.get())throw new InterruptedIOException("Cancelled");to.write(b,0,k);progress(k,n.name);}}return out;}
  File exportSources(List<Storage.Node> nodes)throws IOException{File dir=new File(getCacheDir(),"sources-"+UUID.randomUUID());if(!dir.mkdir())throw new IOException("Cannot prepare sources");Storage.Node dest=storage.node(dir,false);for(Storage.Node n:nodes)storage.copy(n,dest,cancel,(b,s)->progress(b,s));return dir;}
