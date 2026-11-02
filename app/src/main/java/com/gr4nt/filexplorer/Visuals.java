@@ -1,36 +1,33 @@
 package com.gr4nt.filexplorer;
 import android.content.Context;import android.graphics.*;import android.graphics.drawable.*;import android.view.*;import android.widget.*;
 public final class Visuals {
-  public static int INK=0xff292b2a,MUTED=0xff77766f,BLUE=0xff3979dc,LINE=0x26ffffff,CANVAS=0xfff5f3ed;public static boolean dark,mobile,motion=true,blur=true;
-  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff3f0e9:0xff292b2a;MUTED=night?0xffaaa9a1:0xff77766f;BLUE=night?0xff91bcff:0xff3979dc;CANVAS=phone?(night?0xff191b1a:0xffe8effb):(night?0xff101a2a:0xffe8effb);}
+  public static int INK=0xff111318,MUTED=0xff6f7681,BLUE=0xff167cf4,LINE=0x44ffffff,CANVAS=0xffe8efff;public static boolean dark,mobile,motion=true,blur=true;
+  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff5f6fa:0xff111318;MUTED=night?0xffa5a8b1:0xff6f7681;BLUE=night?0xff3295ff:0xff167cf4;CANVAS=night?0xff090a0d:0xffe8efff;}
  public static boolean animate(){return motion&&android.animation.ValueAnimator.areAnimatorsEnabled();}
  public static void enter(View v){if(!animate())return;v.setAlpha(0);v.setTranslationY(dp(v.getContext(),10));v.animate().alpha(1).translationY(0).setDuration(260).setInterpolator(new android.view.animation.PathInterpolator(.2f,0,0,1)).start();}
  public static void press(View v){v.setOnTouchListener((view,e)->{if(animate()){if(e.getActionMasked()==android.view.MotionEvent.ACTION_DOWN)view.animate().scaleX(.96f).scaleY(.96f).setDuration(90).start();if(e.getActionMasked()==android.view.MotionEvent.ACTION_UP||e.getActionMasked()==android.view.MotionEvent.ACTION_CANCEL)view.animate().scaleX(1).scaleY(1).setDuration(180).setInterpolator(new android.view.animation.OvershootInterpolator(.6f)).start();}return false;});}
- public static android.graphics.drawable.Drawable button(float radius){return new RippleDrawable(android.content.res.ColorStateList.valueOf(dark?(mobile?0x33e99a7e:0x338ab8ff):(mobile?0x22bd674a:0x222478f4)),glass(radius,false),null);}
+  public static android.graphics.drawable.Drawable button(float radius){return new RippleDrawable(android.content.res.ColorStateList.valueOf(dark?0x443295ff:0x33167cf4),glass(radius,false),null);}
 
  public static int dp(Context c,float v){return (int)(v*c.getResources().getDisplayMetrics().density+.5f);}
  static Bitmap ambient;static int ambientW,ambientH;
-   public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x582d2d2a,0x4b222422}:new int[]{0x56ffffff,0x4bfaf9f5});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xffe99a7e:0xffbd674a):(dark?0x667d7a70:0xffded9cd));return g;}
-   public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x402c2c29,0x36222422}:new int[]{0x3affffff,0x2ef7f5ef});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0x9ae99a7e:0x99bd674a):(dark?0x667d7a70:0x88ded9cd));return g;}
+    public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0xc843454b,0x9b1c1e23}:new int[]{0x9bffffff,0x78f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xff3295ff:0xff167cf4):(dark?0x889da2ad:0xc7ffffff));return g;}
+    public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x9840444a,0x7817191e}:new int[]{0x83ffffff,0x66f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xd93295ff:0xc4167cf4):(dark?0x709da2ad:0x9cffffff));return g;}
  static class AmbientGlass extends GradientDrawable {final float radius;final Paint sample=new Paint(3);final Path clip=new Path();AmbientGlass(float r){radius=r;}@Override public void draw(Canvas c){if(blur&&ambient!=null&&!ambient.isRecycled()&&getCallback() instanceof View){View target=(View)getCallback();int[] xy=new int[2];target.getLocationInWindow(xy);Rect b=getBounds();c.save();clip.reset();clip.addRoundRect(new RectF(b),radius,radius,Path.Direction.CW);c.clipPath(clip);c.drawBitmap(ambient,null,new RectF(-xy[0],-xy[1],ambientW-xy[0],ambientH-xy[1]),sample);c.restore();}super.draw(c);}}
 
  public static final class Backdrop extends View {
   Paint p=new Paint(3);public Backdrop(Context c){super(c);}
   @Override protected void onSizeChanged(int w,int h,int ow,int oh){super.onSizeChanged(w,h,ow,oh);if(w==0||h==0)return;try{Bitmap b=Bitmap.createBitmap(Math.max(1,w/8),Math.max(1,h/8),Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);c.scale(b.getWidth()/(float)w,b.getHeight()/(float)h);onDraw(c);BlurController.boxBlur(b,3);ambient=b;ambientW=w;ambientH=h;}catch(OutOfMemoryError ignored){}}
     protected void onDraw(Canvas c){
-     float w=getWidth(),h=getHeight();boolean phone=getResources().getConfiguration().screenWidthDp<840;
-     int[] bg=dark?(phone?new int[]{0xff191b1a,0xff20211f,0xff262421}:new int[]{0xff101827,0xff162840,0xff132c32}):new int[]{0xffe8effb,0xfff8f6fc,0xffeaf7f3};
+      float w=getWidth(),h=getHeight();
+      int[] bg=dark?new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}:new int[]{0xffe6efff,0xfff8f5fb,0xffe8f7f2};
      p.setShader(new LinearGradient(0,0,w,h,bg,null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
      if(!dark){
-      p.setShader(new RadialGradient(w*.10f,h*.12f,Math.max(w,h)*.72f,new int[]{0x9aa1c9ff,0x4ca1c9ff,0x00a1c9ff},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-      p.setShader(new RadialGradient(w*.98f,h*.42f,Math.max(w,h)*.68f,new int[]{0x88f1a9d0,0x42f1a9d0,0x00f1a9d0},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-      p.setShader(new RadialGradient(w*.05f,h*.78f,Math.max(w,h)*.66f,new int[]{0x83c6b8ff,0x3dc6b8ff,0x00c6b8ff},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-      p.setShader(new RadialGradient(w*.95f,h*.98f,Math.max(w,h)*.68f,new int[]{0x8da9ecd7,0x42a9ecd7,0x00a9ecd7},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-      p.setShader(new RadialGradient(w*.48f,h*.42f,Math.max(w,h)*.55f,new int[]{0x48ffffff,0x00ffffff},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-     }else{
-      p.setShader(new RadialGradient(w*.08f,h*.22f,Math.max(w,h)*.72f,phone?new int[]{0x182c7866,0x002c7866}:new int[]{0x334b81ce,0x004b81ce},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-      p.setShader(new RadialGradient(w*.94f,h*.78f,Math.max(w,h)*.7f,phone?new int[]{0x183b5155,0x003b5155}:new int[]{0x223caa9d,0x003caa9d},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-     }
+       p.setShader(new RadialGradient(w*.10f,h*.12f,Math.max(w,h)*.72f,new int[]{0xb0a1c9ff,0x62a1c9ff,0x00a1c9ff},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.98f,h*.42f,Math.max(w,h)*.68f,new int[]{0x9bf1a9d0,0x58f1a9d0,0x00f1a9d0},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.05f,h*.78f,Math.max(w,h)*.66f,new int[]{0x91c6b8ff,0x4fc6b8ff,0x00c6b8ff},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.95f,h*.98f,Math.max(w,h)*.68f,new int[]{0xa0a9ecd7,0x58a9ecd7,0x00a9ecd7},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.48f,h*.42f,Math.max(w,h)*.55f,new int[]{0x5effffff,0x00ffffff},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      }
      p.setShader(null);
     }
  }
