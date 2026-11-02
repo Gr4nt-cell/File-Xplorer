@@ -4,6 +4,10 @@ An original offline Android file manager with a light liquid-glass visual style,
 
 This is a development build, not complete MT Manager, 7-Zip or PowerISO feature parity. See [the exact capability list](app/src/main/assets/capabilities.txt). The desktop layout runs in Android windows, not as a Windows/macOS executable. Glass surfaces use rounded translucent panels and a blurred scene; modal backgrounds and built-in media controls also blur the content behind them. Android 12+ uses RenderEffect/native window blur, with a blurred snapshot fallback on Android 8–11. Dynamic optical refraction is not implemented.
 
+## Liquid glass pass
+
+Glass surfaces now render as liquid glass: a more transparent tint, a saturated and lens-magnified backdrop sample, a top specular sheen, a light-catching gradient rim and a soft inner depth shade. Dialogs use a stronger background blur with lighter dimming.
+
 ## v0.5 appearance and media update
 
 Phone actions now sit above the five-item bottom dock, which contains Search. The mobile top search button and overview search field have been removed to reclaim space. Tablets retain their top search and two-pane action toolbar.
@@ -47,7 +51,7 @@ bash build.sh
 python3 tools/apk-smoke.py
 ```
 
-`ANDROID_PLATFORM` and `BUILD_TOOLS_VERSION` can override the SDK directories. Output: `build/File-Xplorer-v0.7.4.apk`. A local development keystore is generated in `build/`; preserve it locally to install compatible development updates. The release keystore backup is `build/release-signing.jks`; keep it offline and never commit it. Both are excluded from source control.
+`ANDROID_PLATFORM` and `BUILD_TOOLS_VERSION` can override the SDK directories. Output: `build/File-Xplorer-v0.7.5.apk`. A local development keystore is generated in `build/`; preserve it locally to install compatible development updates. The release keystore backup is `build/release-signing.jks`; keep it offline and never commit it. Both are excluded from source control.
 
 GitHub Actions runs core tests and the APK smoke test on pushes and pull requests. On pushes and manual runs, it also builds a release-signed APK and AAB. Signing uses the repository Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`; keep the same keystore for every update and maintain a secure backup. Dependency URLs and hashes are recorded in `dependency-lock.json`. Original application code is Apache-2.0; bundled dependencies retain their respective licenses in `app/src/main/assets/licenses`.
 

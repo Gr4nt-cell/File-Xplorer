@@ -7,8 +7,8 @@ public final class GlassDialog extends AlertDialog {
  static int theme(Activity c){return c.getResources().getIdentifier(Visuals.dark?"GlassDialogDark":"GlassDialogLight","style",c.getPackageName());}
  @Override protected void onStart(){super.onStart();style(this,activity);if(!acquired){BlurController.acquire(activity);acquired=true;}}
  @Override protected void onStop(){if(acquired){BlurController.release(activity);acquired=false;}super.onStop();}
- static void style(Dialog dialog,Activity activity){Window w=dialog.getWindow();if(w==null)return;int d=Visuals.dp(activity,1);w.setBackgroundDrawable(new InsetDrawable(Visuals.glass(d*30,false),d*6));w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);w.setDimAmount(Visuals.dark?.40f:.16f);w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);w.setLayout(Math.min(activity.getResources().getDisplayMetrics().widthPixels-d*28,d*640),-2);
-  if(Build.VERSION.SDK_INT>=31)w.setBackgroundBlurRadius(Visuals.blur?d*22:0);
+ static void style(Dialog dialog,Activity activity){Window w=dialog.getWindow();if(w==null)return;int d=Visuals.dp(activity,1);w.setBackgroundDrawable(new InsetDrawable(Visuals.glass(d*30,false),d*6));w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);w.setDimAmount(Visuals.dark?.30f:.08f);w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);w.setLayout(Math.min(activity.getResources().getDisplayMetrics().widthPixels-d*28,d*640),-2);
+  if(Build.VERSION.SDK_INT>=31)w.setBackgroundBlurRadius(Visuals.blur?d*34:0);
   WindowManager.LayoutParams lp=w.getAttributes();lp.windowAnimations=Visuals.animate()?activity.getResources().getIdentifier("GlassMotion","style",activity.getPackageName()):0;w.setAttributes(lp);
    tint(w.getDecorView(),true);Visuals.hideScrollBars(w.getDecorView());View panel=w.getDecorView().findViewById(android.R.id.content);if(panel!=null&&Visuals.animate()){panel.setAlpha(0);panel.setScaleX(.97f);panel.setScaleY(.97f);panel.animate().alpha(1).scaleX(1).scaleY(1).setDuration(220).setInterpolator(new android.view.animation.PathInterpolator(.2f,0,0,1)).start();}
  }

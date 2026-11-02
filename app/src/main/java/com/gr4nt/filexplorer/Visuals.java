@@ -11,10 +11,22 @@ public final class Visuals {
 
  public static int dp(Context c,float v){return (int)(v*c.getResources().getDisplayMetrics().density+.5f);}
  static Bitmap ambient;static int ambientW,ambientH;
-    public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0xc843454b,0x9b1c1e23}:new int[]{0xd9ffffff,0xc9f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xff3295ff:0xff0b63b8):(dark?0x889da2ad:0xd6ffffff));return g;}
-    public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x9840444a,0x7817191e}:new int[]{0xcfffffff,0xb8f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xd93295ff:0xe60b63b8):(dark?0x709da2ad:0xc2ffffff));return g;}
+    public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x8a43454b,0x6a1c1e23}:new int[]{0x8cffffff,0x6af7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xff3295ff:0xff0b63b8):(dark?0x889da2ad:0xd6ffffff));return g;}
+    public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x6c40444a,0x5217191e}:new int[]{0x78ffffff,0x58f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xd93295ff:0xe60b63b8):(dark?0x709da2ad:0xc2ffffff));return g;}
     public static GradientDrawable transparentGlass(float radius,boolean active){GradientDrawable g=new GradientDrawable();g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x19131620,0x120a0b0e}:new int[]{0x19ffffff,0x12f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0x883295ff:0x990b63b8):(dark?0x609da2ad:0x80ffffff));return g;}
- static class AmbientGlass extends GradientDrawable {final float radius;final Paint sample=new Paint(3);final Path clip=new Path();AmbientGlass(float r){radius=r;}@Override public void draw(Canvas c){if(blur&&ambient!=null&&!ambient.isRecycled()&&getCallback() instanceof View){View target=(View)getCallback();int[] xy=new int[2];target.getLocationInWindow(xy);Rect b=getBounds();c.save();clip.reset();clip.addRoundRect(new RectF(b),radius,radius,Path.Direction.CW);c.clipPath(clip);c.drawBitmap(ambient,null,new RectF(-xy[0],-xy[1],ambientW-xy[0],ambientH-xy[1]),sample);c.restore();}super.draw(c);}}
+ /** Liquid glass: saturated, lens-magnified backdrop + tint + top sheen + specular rim + inner depth. */
+ static class AmbientGlass extends GradientDrawable {
+  final float radius;final Paint sample=new Paint(3),sheen=new Paint(1),rim=new Paint(1),depth=new Paint(1);final Path clip=new Path();final RectF box=new RectF();Rect last=new Rect();boolean lastDark;
+  AmbientGlass(float r){radius=r;ColorMatrix m=new ColorMatrix();m.setSaturation(1.45f);sample.setColorFilter(new ColorMatrixColorFilter(m));rim.setStyle(Paint.Style.STROKE);}
+  void shaders(Rect b){if(b.equals(last)&&lastDark==dark&&sheen.getShader()!=null)return;last.set(b);lastDark=dark;float t=b.top,h=b.height();
+   sheen.setShader(new LinearGradient(0,t,0,t+Math.min(h*.55f,radius*2.4f+1),new int[]{dark?0x30ffffff:0x66ffffff,0x00ffffff},null,Shader.TileMode.CLAMP));
+   depth.setShader(new LinearGradient(0,b.bottom-Math.min(h*.4f,radius*1.6f+1),0,b.bottom,new int[]{0x00000000,dark?0x33000000:0x140b2345},null,Shader.TileMode.CLAMP));
+   rim.setShader(new LinearGradient(b.left,t,b.right,b.bottom,new int[]{dark?0xb3ffffff:0xffffffff,dark?0x14ffffff:0x33ffffff,dark?0x14ffffff:0x22ffffff,dark?0x66ffffff:0xccffffff},new float[]{0,.38f,.62f,1},Shader.TileMode.CLAMP));}
+  @Override public void draw(Canvas c){Rect b=getBounds();if(b.isEmpty()){super.draw(c);return;}box.set(b);clip.reset();clip.addRoundRect(box,radius,radius,Path.Direction.CW);
+   if(blur&&ambient!=null&&!ambient.isRecycled()&&getCallback() instanceof View){View target=(View)getCallback();int[] xy=new int[2];target.getLocationInWindow(xy);c.save();c.clipPath(clip);float lens=1.06f;c.scale(lens,lens,box.centerX(),box.centerY());c.drawBitmap(ambient,null,new RectF(-xy[0],-xy[1],ambientW-xy[0],ambientH-xy[1]),sample);c.restore();}
+   super.draw(c);shaders(b);c.save();c.clipPath(clip);c.drawRect(box,sheen);c.drawRect(box,depth);c.restore();
+   float w=Math.max(1.5f,radius/14f);rim.setStrokeWidth(w);RectF in=new RectF(box);in.inset(w/2,w/2);c.drawRoundRect(in,Math.max(0,radius-w/2),Math.max(0,radius-w/2),rim);}
+ }
 
  public static final class Backdrop extends View {
   Paint p=new Paint(3);public Backdrop(Context c){super(c);}
