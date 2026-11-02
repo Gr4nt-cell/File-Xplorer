@@ -84,7 +84,7 @@ public final class Visuals {
    public void draw(Canvas c){
     Rect b=getBounds();c.save();c.translate(b.left,b.top);c.scale(b.width()/24f,b.height()/24f);
     shell.reset();shell.moveTo(2.5f,7);shell.quadTo(2.5f,5,4.5f,5);shell.lineTo(8.7f,5);shell.quadTo(9.5f,5,10.2f,6);shell.lineTo(12,8);shell.lineTo(19.7f,8);shell.quadTo(22,8,22,10);shell.lineTo(21,18.2f);shell.quadTo(20.8f,20,19,20);shell.lineTo(4.3f,20);shell.quadTo(2.5f,20,2.5f,18);shell.close();
-    p.setStyle(Paint.Style.FILL);p.setShader(new LinearGradient(2,4,20,21,new int[]{Icon3D.light(color,48),color,Icon3D.darken(color,38)},null,Shader.TileMode.CLAMP));p.setShadowLayer(2.5f,0,2,0x550b1825);c.drawPath(shell,p);p.clearShadowLayer();p.setShader(null);
+     p.setStyle(Paint.Style.FILL);p.setShader(new LinearGradient(2,4,20,21,new int[]{Icon3D.light(color,48),color,Icon3D.darken(color,38)},null,Shader.TileMode.CLAMP));p.setShadowLayer(dark?2.5f:3f,0,dark?2:3,dark?0x550b1825:0x440b2345);c.drawPath(shell,p);p.clearShadowLayer();p.setShader(null);
     front.reset();front.moveTo(3,10);front.lineTo(21.5f,9.2f);front.lineTo(20.7f,18);front.quadTo(20.5f,19,19.2f,19);front.lineTo(4.2f,19);front.quadTo(3,19,3,17.8f);front.close();
     p.setShader(new LinearGradient(4,9,17,20,new int[]{Icon3D.light(color,26),color,Icon3D.darken(color,28)},null,Shader.TileMode.CLAMP));c.drawPath(front,p);p.setShader(null);
     p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(.75f);p.setStrokeJoin(Paint.Join.ROUND);p.setColor(0x8cffffff);c.drawPath(front,p);p.setStyle(Paint.Style.FILL);p.setColor(0x55ffffff);p.setStrokeWidth(.7f);c.drawLine(4,10,19.8f,9.4f,p);c.restore();
