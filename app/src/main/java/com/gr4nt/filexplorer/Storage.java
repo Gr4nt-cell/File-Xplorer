@@ -57,10 +57,11 @@ public final class Storage {
  }
  public void rename(Node n,String name)throws IOException{
   validName(name);
-   if(n.ftp()){String oldPath=FtpSessions.remotePath(n.path);int slash=oldPath.lastIndexOf('/');String parent=slash<=0?"/":oldPath.substring(0,slash);FTPClient client=ftp.open(n.path);try{if(!client.rename(oldPath,FtpSessions.childPath(parent,name)))throw new IOException("FTP server refused the rename: "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
+   if(name.equals(n.name))return;
+    if(n.ftp()){String oldPath=FtpSessions.remotePath(n.path);int slash=oldPath.lastIndexOf('/');String parent=slash<=0?"/":oldPath.substring(0,slash);FTPClient client=ftp.open(n.path);try{if(!client.rename(oldPath,FtpSessions.childPath(parent,name)))throw new IOException("FTP server refused the rename: "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
   if(n.saf()){if(DocumentsContract.renameDocument(resolver,Uri.parse(n.path),name)==null)throw new IOException("Rename refused");return;}
-   File target=new File(new File(n.path).getParentFile(),name);if(target.exists())throw new IOException("Destination exists");
-   if(!new File(n.path).renameTo(target))throw new IOException("Rename failed");
+   File source=new File(n.path);File parent=source.getAbsoluteFile().getParentFile();if(parent==null)throw new IOException("Storage roots cannot be renamed");File target=new File(parent,name);if(target.exists())throw new IOException("An item named \""+name+"\" already exists");
+   try{Files.move(source.toPath(),target.toPath());}catch(IOException e){throw new IOException("Could not rename \""+n.name+"\" to \""+name+"\": "+e.getMessage(),e);}
  }
  public void delete(Node n)throws IOException{
    if(n.ftp()){if(n.dir)for(Node child:list(n))delete(child);FTPClient client=ftp.open(n.path);try{String remote=FtpSessions.remotePath(n.path);boolean ok=n.dir?client.removeDirectory(remote):client.deleteFile(remote);if(!ok)throw new IOException("FTP server refused to delete "+n.name+": "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
