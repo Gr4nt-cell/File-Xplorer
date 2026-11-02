@@ -1,8 +1,9 @@
 package com.gr4nt.filexplorer;
 import android.content.Context;import android.graphics.*;import android.graphics.drawable.*;import android.view.*;import android.widget.*;
 public final class Visuals {
-  public static int INK=0xff111318,MUTED=0xff6f7681,BLUE=0xff167cf4,LINE=0x44ffffff,CANVAS=0xffe8efff;public static boolean dark,mobile,motion=true,blur=true;
-  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff5f6fa:0xff111318;MUTED=night?0xffa5a8b1:0xff6f7681;BLUE=night?0xff3295ff:0xff167cf4;CANVAS=night?0xff090a0d:0xffe8efff;}
+  public static int INK=0xff17242d,MUTED=0xff52616b,BLUE=0xff0b63b8,LINE=0x44ffffff,CANVAS=0xffe8efff;public static boolean dark,mobile,motion=true,blur=true;
+  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff5f6fa:0xff17242d;MUTED=night?0xffa5a8b1:0xff52616b;BLUE=night?0xff3295ff:0xff0b63b8;CANVAS=night?0xff090a0d:0xffe8efff;}
+  public static <T extends View> T hideScrollBars(T view){view.setVerticalScrollBarEnabled(false);view.setHorizontalScrollBarEnabled(false);if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)hideScrollBars(group.getChildAt(i));}return view;}
  public static boolean animate(){return motion&&android.animation.ValueAnimator.areAnimatorsEnabled();}
  public static void enter(View v){if(!animate())return;v.setAlpha(0);v.setTranslationY(dp(v.getContext(),10));v.animate().alpha(1).translationY(0).setDuration(260).setInterpolator(new android.view.animation.PathInterpolator(.2f,0,0,1)).start();}
  public static void press(View v){v.setOnTouchListener((view,e)->{if(animate()){if(e.getActionMasked()==android.view.MotionEvent.ACTION_DOWN)view.animate().scaleX(.96f).scaleY(.96f).setDuration(90).start();if(e.getActionMasked()==android.view.MotionEvent.ACTION_UP||e.getActionMasked()==android.view.MotionEvent.ACTION_CANCEL)view.animate().scaleX(1).scaleY(1).setDuration(180).setInterpolator(new android.view.animation.OvershootInterpolator(.6f)).start();}return false;});}
@@ -10,8 +11,8 @@ public final class Visuals {
 
  public static int dp(Context c,float v){return (int)(v*c.getResources().getDisplayMetrics().density+.5f);}
  static Bitmap ambient;static int ambientW,ambientH;
-    public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0xc843454b,0x9b1c1e23}:new int[]{0x9bffffff,0x78f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xff3295ff:0xff167cf4):(dark?0x889da2ad:0xc7ffffff));return g;}
-    public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x9840444a,0x7817191e}:new int[]{0x83ffffff,0x66f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xd93295ff:0xc4167cf4):(dark?0x709da2ad:0x9cffffff));return g;}
+    public static GradientDrawable glass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0xc843454b,0x9b1c1e23}:new int[]{0xd9ffffff,0xc9f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xff3295ff:0xff0b63b8):(dark?0x889da2ad:0xd6ffffff));return g;}
+    public static GradientDrawable softGlass(float radius,boolean active){GradientDrawable g=new AmbientGlass(radius);g.setOrientation(GradientDrawable.Orientation.TL_BR);g.setColors(dark?new int[]{0x9840444a,0x7817191e}:new int[]{0xcfffffff,0xb8f7f9ff});g.setCornerRadius(radius);g.setStroke(1,active?(dark?0xd93295ff:0xe60b63b8):(dark?0x709da2ad:0xc2ffffff));return g;}
  static class AmbientGlass extends GradientDrawable {final float radius;final Paint sample=new Paint(3);final Path clip=new Path();AmbientGlass(float r){radius=r;}@Override public void draw(Canvas c){if(blur&&ambient!=null&&!ambient.isRecycled()&&getCallback() instanceof View){View target=(View)getCallback();int[] xy=new int[2];target.getLocationInWindow(xy);Rect b=getBounds();c.save();clip.reset();clip.addRoundRect(new RectF(b),radius,radius,Path.Direction.CW);c.clipPath(clip);c.drawBitmap(ambient,null,new RectF(-xy[0],-xy[1],ambientW-xy[0],ambientH-xy[1]),sample);c.restore();}super.draw(c);}}
 
  public static final class Backdrop extends View {

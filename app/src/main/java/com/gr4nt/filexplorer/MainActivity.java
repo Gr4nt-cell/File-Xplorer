@@ -38,7 +38,7 @@ public final class MainActivity extends Activity {
    else if(!wide&&page.equals("home"))addIcon(top,"search",()->searchDialog(null));
    addIcon(top,"more",this::globalMenu);content.addView(top);
   if(page.equals("home"))home();else if(page.equals("tools"))tools();else if(page.equals("settings"))settings();else if(page.equals("search"))showSearchResults();else browse();
-   if(!wide)buildDock();if(!renderedPage.equals(page)){Visuals.enter(content);renderedPage=page;}updateSystemBars();
+   if(!wide)buildDock();if(!renderedPage.equals(page)){Visuals.enter(content);renderedPage=page;}updateSystemBars();Visuals.hideScrollBars(shell);
  }
  void nav(String target){searchCancel.set(true);searchGeneration.incrementAndGet();page=target;render();}
  void buildSidebar(){sidebar.addView(heading("Your space.",25));gap(sidebar,8);sidebar.addView(label("Everything, in its place.",12,Visuals.MUTED));gap(sidebar,30);
