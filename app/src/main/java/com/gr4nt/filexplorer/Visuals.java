@@ -31,19 +31,16 @@ public final class Visuals {
  public static final class Backdrop extends View {
   Paint p=new Paint(3);public Backdrop(Context c){super(c);}
   @Override protected void onSizeChanged(int w,int h,int ow,int oh){super.onSizeChanged(w,h,ow,oh);if(w==0||h==0)return;try{Bitmap b=Bitmap.createBitmap(Math.max(1,w/8),Math.max(1,h/8),Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);c.scale(b.getWidth()/(float)w,b.getHeight()/(float)h);onDraw(c);BlurController.boxBlur(b,3);ambient=b;ambientW=w;ambientH=h;}catch(OutOfMemoryError ignored){}}
+   void radialEllipse(Canvas canvas,float cx,float cy,float rx,float ry,int color){canvas.save();canvas.translate(cx,cy);canvas.scale(rx,ry);p.setShader(new RadialGradient(0,0,1,new int[]{color,color&0x00ffffff,0x00000000},new float[]{0,.65f,1},Shader.TileMode.CLAMP));canvas.drawCircle(0,0,1,p);canvas.restore();}
     protected void onDraw(Canvas c){
       float w=getWidth(),h=getHeight();
-      int[] bg=dark?(mobile?new int[]{0xff111914,0xff141b16,0xff111914}:new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}):(mobile?new int[]{0xfff7f6f1,0xfff0efe9,0xffe9edeb}:new int[]{0xffedf4ef,0xfff4f7f3,0xffe8f1eb});
-     p.setShader(new LinearGradient(0,0,w,h,bg,null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       int[] bg=dark?(mobile?new int[]{0xff111914,0xff141b16,0xff111914}:new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}):new int[]{0xffd6fff0,0xfff4fbfa,0xfffff0df};
+      p.setShader(new LinearGradient(0,0,w,h,bg,dark?null:new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
      if(!dark){
-       p.setShader(new RadialGradient(w*(mobile?.12f:.08f),h*.12f,Math.max(w,h)*(mobile?.68f:.74f),new int[]{mobile?0x5098b7cf:0x8fd5e8df,mobile?0x1e98b7cf:0x42d5e8df,0x00000000},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-       if(mobile){p.setShader(new RadialGradient(w*.92f,h*.91f,Math.max(w,h)*.62f,new int[]{0x1fa7c1ad,0x10a7c1ad,0x00a7c1ad},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);}
-       else{
-        p.setShader(new RadialGradient(w*.98f,h*.40f,Math.max(w,h)*.68f,new int[]{0x88dcece4,0x42dcece4,0x00dcece4},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-        p.setShader(new RadialGradient(w*.04f,h*.80f,Math.max(w,h)*.68f,new int[]{0x78e5eee8,0x3ae5eee8,0x00e5eee8},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-        p.setShader(new RadialGradient(w*.96f,h*.98f,Math.max(w,h)*.69f,new int[]{0x8cc9e5d8,0x40c9e5d8,0x00c9e5d8},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-       }
-       p.setShader(new RadialGradient(w*.48f,h*.42f,Math.max(w,h)*.55f,new int[]{0x5effffff,0x00ffffff},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+        // Mirrors the supplied iBrowser CSS backdrop: mint light from the upper-left,
+        // warm apricot from the lower-right, over a pale diagonal three-stop gradient.
+        radialEllipse(c,w,h,w,h,0xa6ffb37c);
+        radialEllipse(c,0,0,w,h,0xa663f4cc);
       }
      p.setShader(null);
     }
