@@ -37,7 +37,7 @@ public final class MainActivity extends Activity {
    if(!wide&&page.equals("browse")){boolean grid=prefs.getBoolean("browse_grid",true);ImageButton gridButton=icon("grid",()->setBrowseGrid(true)),listButton=icon("list",()->setBrowseGrid(false));gridButton.setImageAlpha(grid?255:120);listButton.setImageAlpha(grid?120:255);top.addView(gridButton,new LinearLayout.LayoutParams(d(38),d(42)));top.addView(listButton,new LinearLayout.LayoutParams(d(38),d(42)));addIcon(top,"sort",this::sortMenu);addIcon(top,"plus",this::newItem);}
    else if(!wide&&page.equals("home"))addIcon(top,"search",()->searchDialog(null));
    addIcon(top,"more",this::globalMenu);content.addView(top);
-  if(page.equals("home"))home();else if(page.equals("tools"))tools();else if(page.equals("settings"))settings();else if(page.equals("search"))showSearchResults();else browse();
+  if(page.equals("home"))home();else if(page.equals("tools"))tools();else if(page.equals("settings"))settings();else if(page.equals("search"))showSearchResults();else browse();if(page.equals("browse"))applyBrowseSurfaceTransparency();
    if(!wide)buildDock();if(!renderedPage.equals(page)){Visuals.enter(content);renderedPage=page;}updateSystemBars();Visuals.hideScrollBars(shell);
  }
  void nav(String target){searchCancel.set(true);searchGeneration.incrementAndGet();page=target;render();}
@@ -122,6 +122,7 @@ public final class MainActivity extends Activity {
    }
    if(!wide)buildActionShelf(panels);
   }
+  void applyBrowseSurfaceTransparency(){if(wide||content==null||content.getChildCount()<2)return;View candidate=content.getChildAt(1);if(!(candidate instanceof ViewGroup))return;ViewGroup panels=(ViewGroup)candidate;if(panels.getChildCount()<2)return;panels.getChildAt(0).setBackground(Visuals.transparentGlass(d(24),true));panels.getChildAt(1).setBackground(Visuals.transparentGlass(d(23),true));}
   void setBrowseGrid(boolean value){prefs.edit().putBoolean("browse_grid",value).apply();render();}
 
   void loadPane(int index){Pane p=panes[index];long gen=++p.generation;Storage.Node folder=p.folder;if(p.location!=null)p.location.setText(folderPathLabel(p));io.submit(()->{try{List<Storage.Node> list=storage.list(folder);if(!showHidden)list.removeIf(n->n.name.startsWith("."));list.sort((a,b)->{if(a.dir!=b.dir)return a.dir?-1:1;int c=sort.equals("size")?Long.compare(b.size,a.size):sort.equals("date")?Long.compare(b.modified,a.modified):a.name.compareToIgnoreCase(b.name);return c==0?a.name.compareTo(b.name):c;});ui.post(()->{if(gen!=p.generation)return;p.rows=list;if(p.list!=null&&p.list.getAdapter()!=null){((BaseAdapter)p.list.getAdapter()).notifyDataSetChanged();if(p.gridView!=null)((BaseAdapter)p.gridView.getAdapter()).notifyDataSetChanged();if(!folder.path.equals(p.animatedFolder)){Visuals.enter(p.grid&&p.gridView!=null?p.gridView:p.list);p.animatedFolder=folder.path;}}if(p.count!=null)p.count.setText(list.size()+" items  ·  "+p.selected.size()+" selected");updateActionRailState();});}catch(Exception e){ui.post(()->{if(gen==p.generation){p.rows.clear();if(p.count!=null)p.count.setText(e.getMessage());if(p.list!=null)((BaseAdapter)p.list.getAdapter()).notifyDataSetChanged();if(p.gridView!=null)((BaseAdapter)p.gridView.getAdapter()).notifyDataSetChanged();updateActionRailState();}});}});}
