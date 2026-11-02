@@ -20,11 +20,11 @@ items=[
  ('com/beust/jcommander/1.64/jcommander-1.64.jar','maven'),
  ('org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar','maven'),
  ('com/android/tools/build/apksig/8.7.3/apksig-8.7.3.jar','google'),
- ('dev/rikka/shizuku/api/13.1.5/api-13.1.5.aar','maven'),
- ('dev/rikka/shizuku/provider/13.1.5/provider-13.1.5.aar','maven'),
- ('dev/rikka/shizuku/aidl/13.1.5/aidl-13.1.5.aar','maven'),
- ('dev/rikka/shizuku/shared/13.1.5/shared-13.1.5.aar','maven'),
  ('androidx/annotation/annotation/1.3.0/annotation-1.3.0.jar','google')]
+active_names={path.rsplit('/',1)[-1] for path,_ in items}
+active_names.update(name[:-4]+'-classes.jar' for name in list(active_names) if name.endswith('.aar'))
+for cached in OUT.iterdir():
+ if cached.is_file() and cached.name not in active_names:cached.unlink()
 expected={}
 lock=ROOT/'dependency-lock.json'
 if lock.exists():expected={r['name']:r['sha256'] for r in json.loads(lock.read_text())}

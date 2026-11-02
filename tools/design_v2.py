@@ -39,7 +39,7 @@ def tablet(dark):
  for i,(n,g) in enumerate([('Overview','apps'),('Browse files','folder'),('Workbench','tools'),('Settings','settings')]):
   y=197+i*54;b+=box(31,y,202,46,16,P['sel'] if i==1 else 'url(#glass)')+icon(g,46,y+13,22)+txt(n,82,y+30,14)
  b+=txt('LOCATIONS',42,460,11,'muted',500)
- for i,(n,g) in enumerate([('On device','drive'),('Workspace','folder'),('Android / data','root'),('Android / obb','root'),('SD / USB folders','drive')]):b+=icon(g,44,484+i*52,22)+txt(n,80,501+i*52,14)
+ for i,(n,g) in enumerate([('On device','drive'),('Workspace','folder'),('Recent','document'),('Favorites','star'),('SD / USB folders','drive')]):b+=icon(g,44,484+i*52,22)+txt(n,80,501+i*52,14)
  b+=box(32,830,200,63,20)+icon('moon',48,849,23)+txt('Dark glass' if dark else 'Light glass',84,867,14)
  b+=txt('Two panes. One workspace.',282,78,32,'ink',500)+txt('A clear view of everything you keep.',283,109,13,'muted')+box(1120,39,264,54,20)+icon('search',1139,55,23,'muted')+txt('Find anything…',1174,72,14,'muted')
  for i,n in enumerate(['Copy','Move','Paste','Create archive','More']):b+=box(282+i*135,145,122,44,16)+txt(n,302+i*135,173,13,'blue',500)

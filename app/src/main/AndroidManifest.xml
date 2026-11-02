@@ -1,12 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gr4nt.filexplorer" android:versionCode="7" android:versionName="0.7.0">
- <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
  <uses-permission android:name="android.permission.INTERNET"/>
  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
  <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
- <uses-permission android:name="moe.shizuku.manager.permission.API_V23"/>
  <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
  <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true"/>
  <application android:theme="@android:style/Theme.Material.Light.NoActionBar" android:label="File Xplorer" android:icon="@drawable/app_icon" android:allowBackup="false" android:requestLegacyExternalStorage="true" android:resizeableActivity="true" android:hardwareAccelerated="true">
@@ -14,7 +12,6 @@
    <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
    <intent-filter><action android:name="android.intent.action.VIEW"/><category android:name="android.intent.category.DEFAULT"/><data android:scheme="content" android:mimeType="application/zip"/><data android:mimeType="application/x-7z-compressed"/><data android:mimeType="application/vnd.android.package-archive"/></intent-filter>
   </activity>
-  <provider android:name="rikka.shizuku.ShizukuProvider" android:authorities="com.gr4nt.filexplorer.shizuku" android:multiprocess="false" android:enabled="true" android:exported="true" android:permission="android.permission.INTERACT_ACROSS_USERS_FULL"/>
   <provider android:name=".ShareProvider" android:authorities="com.gr4nt.filexplorer.share" android:exported="false" android:grantUriPermissions="true"/>
  </application>
 </manifest>

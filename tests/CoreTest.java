@@ -4,15 +4,6 @@ public class CoreTest {
  static int checks;static void check(boolean yes,String why){checks++;if(!yes)throw new AssertionError(why);}interface Call{void run()throws Exception;}static void fails(Call c,String why)throws Exception{boolean failed=false;try{c.run();}catch(Exception e){failed=true;}check(failed,why);}
  public static void main(String[] args)throws Exception{
   File root=Files.createTempDirectory("fx-tests").toFile(),source=new File(root,"Source");source.mkdir();File sub=new File(source,"nested");sub.mkdir();Files.write(new File(sub,"résumé.txt").toPath(),"A searchable résumé\nNeedle in a document\n".getBytes(StandardCharsets.UTF_8));Files.write(new File(source,"empty.txt").toPath(),new byte[0]);new File(source,"empty-dir").mkdir();File content=new File(source,"中文.txt");Files.write(content.toPath(),"Unicode survives".getBytes(StandardCharsets.UTF_8));
-   check(RootShell.quote("a'b").equals("'a'\\''b'"),"Shell quote embedded apostrophe");String attack="quoted ' $HOME $(printf bad) ; end";check(RootShell.run("printf %s "+RootShell.quote(attack),false,5).text.equals(attack),"No shell expansion in quoted paths");
-   check(RootShell.backingPath("/storage/emulated/0/Android/data","/storage/emulated/0").equals("/data/media/0/Android/data"),"Map primary shared storage to its root backing path");
-   check(RootShell.backingPath("/storage/emulated/10/Android/obb","/storage/emulated/10").equals("/data/media/10/Android/obb"),"Map secondary-user shared storage correctly");
-   check(RootShell.backingPath("/storage/emulated/01/file","/storage/emulated/0").equals("/storage/emulated/01/file"),"Do not map sibling storage paths");
-   check(RootShell.visiblePath("/data/media/0/Android/obb","/storage/emulated/0").equals("/storage/emulated/0/Android/obb"),"Show root backing entries as normal shared-storage paths");
-    check(RootShell.preferVisiblePath(0,"",0,"metadata\nfile"),"Use mounted storage when backing listing is empty but visible storage has entries");
-    check(!RootShell.preferVisiblePath(0,"metadata\nfile",0,"other"),"Prefer a populated backing listing");
-    check(RootShell.preferVisiblePath(2,"permission denied",0,""),"Fall back to an accessible mounted directory even when empty");
-    check(!RootShell.preferVisiblePath(0,"",2,"permission denied"),"Keep a readable empty backing directory when mounted path is unavailable");
   fails(()->FileSafety.child(root,"../escape"),"Reject traversal");fails(()->FileSafety.child(root,"/absolute"),"Reject absolute path");fails(()->FileSafety.child(root,"C:\\escape"),"Reject Windows absolute path");fails(()->FileSafety.rejectDescendant(source,new File(sub,"archive.zip")),"Reject copy into source");
   File outDir=new File(root,"escape-check");outDir.mkdir();Path link=new File(outDir,"link").toPath();Files.createSymbolicLink(link,root.toPath());fails(()->FileSafety.child(outDir,"link/evil"),"Reject symlink traversal");
   for(String format:new String[]{"zip","7z","tar","tar.gz","tar.xz","tar.bz2","iso"}){

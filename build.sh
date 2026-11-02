@@ -20,7 +20,7 @@ with zipfile.ZipFile('build/classes.jar','w') as z:
 PY
 "$bt/d8" --min-api 26 --lib "$platform" --output build/dex build/classes.jar .deps/*.jar
 "$bt/aapt2" compile --dir app/src/main/res -o build/compiled-res.zip
-"$bt/aapt2" link build/compiled-res.zip -o build/resources.apk -I "$platform" --manifest app/src/main/AndroidManifest.xml -A app/src/main/assets --min-sdk-version 26 --target-sdk-version 35
+"$bt/aapt2" link build/compiled-res.zip -o build/resources.apk -I "$platform" --manifest app/src/main/AndroidManifest.xml --rename-manifest-package com.gr4nt.filexplorer --version-code 7 --version-name 0.7.0 -A app/src/main/assets --min-sdk-version 26 --target-sdk-version 35
 python3 - <<'PY'
 import zipfile,pathlib,shutil
 shutil.copyfile('build/resources.apk','build/unsigned.apk')

@@ -1,8 +1,8 @@
 package com.gr4nt.filexplorer;
 import android.content.Context;import android.graphics.*;import android.graphics.drawable.*;import android.view.*;import android.widget.*;
 public final class Visuals {
-  public static int INK=0xff292b2a,MUTED=0xff77766f,BLUE=0xffbd674a,LINE=0x26ffffff,CANVAS=0xfff5f3ed;public static boolean dark,mobile,motion=true,blur=true;
-  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff3f0e9:0xff292b2a;MUTED=night?0xffaaa9a1:0xff77766f;BLUE=night?0xffe99a7e:0xffbd674a;CANVAS=phone?(night?0xff191b1a:0xffe2ebe2):(night?0xff101a2a:0xffe2ebe2);}
+  public static int INK=0xff292b2a,MUTED=0xff77766f,BLUE=0xff3979dc,LINE=0x26ffffff,CANVAS=0xfff5f3ed;public static boolean dark,mobile,motion=true,blur=true;
+  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff3f0e9:0xff292b2a;MUTED=night?0xffaaa9a1:0xff77766f;BLUE=night?0xff91bcff:0xff3979dc;CANVAS=phone?(night?0xff191b1a:0xffe8effb):(night?0xff101a2a:0xffe8effb);}
  public static boolean animate(){return motion&&android.animation.ValueAnimator.areAnimatorsEnabled();}
  public static void enter(View v){if(!animate())return;v.setAlpha(0);v.setTranslationY(dp(v.getContext(),10));v.animate().alpha(1).translationY(0).setDuration(260).setInterpolator(new android.view.animation.PathInterpolator(.2f,0,0,1)).start();}
  public static void press(View v){v.setOnTouchListener((view,e)->{if(animate()){if(e.getActionMasked()==android.view.MotionEvent.ACTION_DOWN)view.animate().scaleX(.96f).scaleY(.96f).setDuration(90).start();if(e.getActionMasked()==android.view.MotionEvent.ACTION_UP||e.getActionMasked()==android.view.MotionEvent.ACTION_CANCEL)view.animate().scaleX(1).scaleY(1).setDuration(180).setInterpolator(new android.view.animation.OvershootInterpolator(.6f)).start();}return false;});}
@@ -17,7 +17,22 @@ public final class Visuals {
  public static final class Backdrop extends View {
   Paint p=new Paint(3);public Backdrop(Context c){super(c);}
   @Override protected void onSizeChanged(int w,int h,int ow,int oh){super.onSizeChanged(w,h,ow,oh);if(w==0||h==0)return;try{Bitmap b=Bitmap.createBitmap(Math.max(1,w/8),Math.max(1,h/8),Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);c.scale(b.getWidth()/(float)w,b.getHeight()/(float)h);onDraw(c);BlurController.boxBlur(b,3);ambient=b;ambientW=w;ambientH=h;}catch(OutOfMemoryError ignored){}}
-   protected void onDraw(Canvas c){float w=getWidth(),h=getHeight();boolean phone=getResources().getConfiguration().screenWidthDp<840;int[] bg=phone?(dark?new int[]{0xff191b1a,0xff20211f,0xff262421}:new int[]{0xffe2ebe2,0xffe8ebdf,0xffe2ebe4}):dark?new int[]{0xff101827,0xff162840,0xff132c32}:new int[]{0xffe2ebe2,0xffe8ebdf,0xffe2ebe4};p.setShader(new LinearGradient(0,0,w,h,bg,null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);if(phone){p.setShader(new RadialGradient(w*.88f,h*.25f,w*.65f,dark?new int[]{0x182c7866,0x002c7866}:new int[]{0x1eafd0bd,0x00afd0bd},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);p.setShader(new RadialGradient(w*.06f,h*.78f,w*.58f,dark?new int[]{0x183b5155,0x003b5155}:new int[]{0x18c2d3bb,0x00c2d3bb},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);}else{p.setShader(new RadialGradient(w*.05f,h*.2f,w*.8f,dark?new int[]{0x334b81ce,0x004b81ce}:new int[]{0x2296bea9,0x0096bea9},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);p.setShader(new RadialGradient(w*.95f,h*.7f,w*.8f,dark?new int[]{0x223caa9d,0x003caa9d}:new int[]{0x1bc2d2b9,0x00c2d2b9},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);}p.setShader(null);}
+    protected void onDraw(Canvas c){
+     float w=getWidth(),h=getHeight();boolean phone=getResources().getConfiguration().screenWidthDp<840;
+     int[] bg=dark?(phone?new int[]{0xff191b1a,0xff20211f,0xff262421}:new int[]{0xff101827,0xff162840,0xff132c32}):new int[]{0xffe8effb,0xfff8f6fc,0xffeaf7f3};
+     p.setShader(new LinearGradient(0,0,w,h,bg,null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+     if(!dark){
+      p.setShader(new RadialGradient(w*.10f,h*.12f,Math.max(w,h)*.72f,new int[]{0x9aa1c9ff,0x4ca1c9ff,0x00a1c9ff},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      p.setShader(new RadialGradient(w*.98f,h*.42f,Math.max(w,h)*.68f,new int[]{0x88f1a9d0,0x42f1a9d0,0x00f1a9d0},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      p.setShader(new RadialGradient(w*.05f,h*.78f,Math.max(w,h)*.66f,new int[]{0x83c6b8ff,0x3dc6b8ff,0x00c6b8ff},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      p.setShader(new RadialGradient(w*.95f,h*.98f,Math.max(w,h)*.68f,new int[]{0x8da9ecd7,0x42a9ecd7,0x00a9ecd7},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      p.setShader(new RadialGradient(w*.48f,h*.42f,Math.max(w,h)*.55f,new int[]{0x48ffffff,0x00ffffff},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+     }else{
+      p.setShader(new RadialGradient(w*.08f,h*.22f,Math.max(w,h)*.72f,phone?new int[]{0x182c7866,0x002c7866}:new int[]{0x334b81ce,0x004b81ce},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+      p.setShader(new RadialGradient(w*.94f,h*.78f,Math.max(w,h)*.7f,phone?new int[]{0x183b5155,0x003b5155}:new int[]{0x223caa9d,0x003caa9d},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+     }
+     p.setShader(null);
+    }
  }
  public static class Icon extends Drawable {
   final String name;final int color;final Paint p=new Paint(3);final Path path=new Path();
@@ -34,8 +49,9 @@ public final class Visuals {
      case "select_all":for(int i=0;i<4;i++){float x=2+(i%2)*10,y=2+(i/2)*10;c.drawRoundRect(x,y,x+8,y+8,1.5f,1.5f,p);path.moveTo(x+1.5f,y+4);path.lineTo(x+3.4f,y+6);path.lineTo(x+6.8f,y+1.5f);c.drawPath(path,p);path.reset();}break;
      case "clear_selection":c.drawRoundRect(3,3,17,19,2,2,p);c.drawCircle(17,17,5,p);c.drawLine(15,15,19,19,p);c.drawLine(19,15,15,19,p);break;
      case "archive_iso":c.drawRoundRect(3,2,15,19,2,2,p);c.drawLine(6,7,12,7,p);c.drawLine(6,10,12,10,p);c.drawLine(6,13,10,13,p);c.drawCircle(17,17,5,p);c.drawCircle(17,17,1.3f,p);break;
-     case "extract":c.drawRoundRect(3,2,19,20,2,2,p);c.drawLine(6,6,16,6,p);c.drawLine(6,10,16,10,p);c.drawLine(6,14,11,14,p);c.drawLine(15,13,15,21,p);path.moveTo(12,18);path.lineTo(15,21);path.lineTo(18,18);c.drawPath(path,p);break;
-     case "delete_selected":c.drawRoundRect(2,4,10,12,1,1,p);path.moveTo(3.5f,8);path.lineTo(5.5f,10);path.lineTo(8.5f,6);c.drawPath(path,p);c.drawLine(13,7,22,7,p);c.drawLine(15,5,20,5,p);c.drawRoundRect(14,8,21,21,1,1,p);c.drawLine(16,11,16,18,p);c.drawLine(19,11,19,18,p);break;
+      case "zip":c.drawRoundRect(4,2,20,22,2,2,p);c.drawLine(7,5,17,5,p);c.drawLine(7,8,17,8,p);c.drawLine(12,5,12,15,p);for(int i=0;i<4;i++)c.drawRect(10.8f,9+i*2,13.2f,10+i*2,p);c.drawRoundRect(10,16,14,19,1,1,p);break;
+      case "extract":case "unzip":c.drawRoundRect(3,2,19,20,2,2,p);c.drawLine(6,6,16,6,p);c.drawLine(6,10,16,10,p);c.drawLine(6,14,11,14,p);c.drawLine(15,13,15,21,p);path.moveTo(12,18);path.lineTo(15,21);path.lineTo(18,18);c.drawPath(path,p);break;
+      case "bin":case "delete_selected":c.drawLine(5,6,19,6,p);c.drawLine(9,4,15,4,p);c.drawRoundRect(7,7,17,21,2,2,p);c.drawLine(10,10,10,18,p);c.drawLine(14,10,14,18,p);c.drawLine(4,6,5,8,p);c.drawLine(20,6,19,8,p);break;
      case "copy":c.drawRoundRect(7,2,19,16,2,2,p);c.drawRoundRect(3,7,15,22,2,2,p);break;
      case "paste":c.drawRoundRect(4,5,20,22,2,2,p);c.drawRoundRect(8,2,16,7,2,2,p);c.drawLine(8,11,16,11,p);c.drawLine(8,15,16,15,p);c.drawLine(8,19,14,19,p);break;
      case "move":c.drawRoundRect(7,7,17,17,1,1,p);c.drawLine(12,2,12,7,p);c.drawLine(10,4,12,2,p);c.drawLine(14,4,12,2,p);c.drawLine(12,17,12,22,p);c.drawLine(10,20,12,22,p);c.drawLine(14,20,12,22,p);c.drawLine(2,12,7,12,p);c.drawLine(4,10,2,12,p);c.drawLine(4,14,2,12,p);c.drawLine(17,12,22,12,p);c.drawLine(20,10,22,12,p);c.drawLine(20,14,22,12,p);break;

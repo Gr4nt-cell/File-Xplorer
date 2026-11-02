@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.application' version '8.7.3'
+}
+
+android {
+    namespace 'com.gr4nt.filexplorer'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gr4nt.filexplorer'
+        minSdk 26
+        targetSdk 35
+        versionCode 7
+        versionName '0.7.0'
+    }
+
+    signingConfigs {
+        release {
+            def signingStore = System.getenv('ANDROID_KEYSTORE_FILE')
+            if (signingStore) {
+                storeFile file(signingStore)
+                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('ANDROID_KEY_ALIAS')
+                keyPassword System.getenv('ANDROID_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: rootProject.file('.deps'), include: ['*.jar'])
+}
