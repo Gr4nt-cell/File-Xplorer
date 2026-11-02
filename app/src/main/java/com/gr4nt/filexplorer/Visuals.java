@@ -1,8 +1,8 @@
 package com.gr4nt.filexplorer;
 import android.content.Context;import android.graphics.*;import android.graphics.drawable.*;import android.view.*;import android.widget.*;
 public final class Visuals {
-  public static int INK=0xff17242d,MUTED=0xff52616b,BLUE=0xff0b63b8,LINE=0x44ffffff,CANVAS=0xffe8efff;public static boolean dark,mobile,motion=true,blur=true;
-  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff5f6fa:0xff17242d;MUTED=night?0xffa5a8b1:0xff52616b;BLUE=night?0xff3295ff:0xff0b63b8;CANVAS=night?0xff090a0d:0xffe8efff;}
+  public static int INK=0xff17242d,MUTED=0xff52616b,BLUE=0xff0b63b8,LINE=0x44ffffff,CANVAS=0xffedf4ef;public static boolean dark,mobile,motion=true,blur=true;
+  public static void configure(boolean night){configure(night,false);}public static void configure(boolean night,boolean phone){dark=night;mobile=phone;INK=night?0xfff5f6fa:0xff17242d;MUTED=night?0xffa5a8b1:0xff52616b;BLUE=night?0xff3295ff:0xff0b63b8;CANVAS=night?0xff090a0d:0xffedf4ef;}
   public static <T extends View> T hideScrollBars(T view){view.setVerticalScrollBarEnabled(false);view.setHorizontalScrollBarEnabled(false);if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)hideScrollBars(group.getChildAt(i));}return view;}
  public static boolean animate(){return motion&&android.animation.ValueAnimator.areAnimatorsEnabled();}
  public static void enter(View v){if(!animate())return;v.setAlpha(0);v.setTranslationY(dp(v.getContext(),10));v.animate().alpha(1).translationY(0).setDuration(260).setInterpolator(new android.view.animation.PathInterpolator(.2f,0,0,1)).start();}
@@ -33,13 +33,13 @@ public final class Visuals {
   @Override protected void onSizeChanged(int w,int h,int ow,int oh){super.onSizeChanged(w,h,ow,oh);if(w==0||h==0)return;try{Bitmap b=Bitmap.createBitmap(Math.max(1,w/8),Math.max(1,h/8),Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);c.scale(b.getWidth()/(float)w,b.getHeight()/(float)h);onDraw(c);BlurController.boxBlur(b,3);ambient=b;ambientW=w;ambientH=h;}catch(OutOfMemoryError ignored){}}
     protected void onDraw(Canvas c){
       float w=getWidth(),h=getHeight();
-      int[] bg=dark?new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}:new int[]{0xffe6efff,0xfff8f5fb,0xffe8f7f2};
+      int[] bg=dark?new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}:new int[]{0xffedf4ef,0xfff4f7f3,0xffe8f1eb};
      p.setShader(new LinearGradient(0,0,w,h,bg,null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
      if(!dark){
-       p.setShader(new RadialGradient(w*.10f,h*.12f,Math.max(w,h)*.72f,new int[]{0xb0a1c9ff,0x62a1c9ff,0x00a1c9ff},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-       p.setShader(new RadialGradient(w*.98f,h*.42f,Math.max(w,h)*.68f,new int[]{0x9bf1a9d0,0x58f1a9d0,0x00f1a9d0},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-       p.setShader(new RadialGradient(w*.05f,h*.78f,Math.max(w,h)*.66f,new int[]{0x91c6b8ff,0x4fc6b8ff,0x00c6b8ff},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-       p.setShader(new RadialGradient(w*.95f,h*.98f,Math.max(w,h)*.68f,new int[]{0xa0a9ecd7,0x58a9ecd7,0x00a9ecd7},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.08f,h*.12f,Math.max(w,h)*.74f,new int[]{0x8fd5e8df,0x42d5e8df,0x00d5e8df},new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.98f,h*.40f,Math.max(w,h)*.68f,new int[]{0x88dcece4,0x42dcece4,0x00dcece4},new float[]{0,.55f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.04f,h*.80f,Math.max(w,h)*.68f,new int[]{0x78e5eee8,0x3ae5eee8,0x00e5eee8},new float[]{0,.52f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+       p.setShader(new RadialGradient(w*.96f,h*.98f,Math.max(w,h)*.69f,new int[]{0x8cc9e5d8,0x40c9e5d8,0x00c9e5d8},new float[]{0,.54f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
        p.setShader(new RadialGradient(w*.48f,h*.42f,Math.max(w,h)*.55f,new int[]{0x5effffff,0x00ffffff},null,Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
       }
      p.setShader(null);

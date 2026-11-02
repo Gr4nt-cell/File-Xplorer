@@ -51,7 +51,7 @@ bash build.sh
 python3 tools/apk-smoke.py
 ```
 
-`ANDROID_PLATFORM` and `BUILD_TOOLS_VERSION` can override the SDK directories. Output: `build/File-Xplorer-v0.7.5.apk`. A local development keystore is generated in `build/`; preserve it locally to install compatible development updates. The release keystore backup is `build/release-signing.jks`; keep it offline and never commit it. Both are excluded from source control.
+`ANDROID_PLATFORM` and `BUILD_TOOLS_VERSION` can override the SDK directories. Output: `build/File-Xplorer-v0.7.6.apk`. A local development keystore is generated in `build/`; preserve it locally to install compatible development updates. The release keystore backup is `build/release-signing.jks`; keep it offline and never commit it. Both are excluded from source control.
 
 GitHub Actions runs core tests and the APK smoke test on pushes and pull requests. On pushes and manual runs, it also builds a release-signed APK and AAB. Signing uses the repository Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`; keep the same keystore for every update and maintain a secure backup. Dependency URLs and hashes are recorded in `dependency-lock.json`. Original application code is Apache-2.0; bundled dependencies retain their respective licenses in `app/src/main/assets/licenses`.
 
