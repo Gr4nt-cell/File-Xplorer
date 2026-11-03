@@ -170,7 +170,32 @@ public final class MainActivity extends Activity {
   void createSelectedZip(){List<Storage.Node> items=selected();if(items.isEmpty())toast("Select files first");else createArchive(items,"zip");}
  void setSort(String value){sort=value;prefs.edit().putString("sort",sort).apply();refresh();}
  void clip(boolean move){List<Storage.Node> selection=selected();if(selection.isEmpty()){toast("Long-press files to select them first");return;}clipboard=new ArrayList<>(selection);clipboardMove=move;panes[active].selected.clear();toast(selection.size()+" items ready. Choose a destination and tap Paste.");render();}
- void paste(){if(clipboard.isEmpty()){toast("Clipboard is empty");return;}Storage.Node dest=panes[active].folder;List<Storage.Node> items=new ArrayList<>(clipboard);boolean move=clipboardMove;confirm((move?"Move":"Copy")+" "+items.size()+" items?","Destination: "+dest.name+"\nExisting names are never overwritten.",()->job("Transferring files",()->{for(Storage.Node n:items){storage.copy(n,dest,cancel,(bytes,name)->progress(bytes,name));if(move){if(cancel.get())throw new InterruptedIOException("Cancelled");storage.delete(n);}}clipboard.clear();ui.post(()->updateActionRailState());return "Transfer complete";}));}
+  static final class TransferPlan{final Storage.Node source;Storage.Node existing;String outputName;boolean replace,skip;TransferPlan(Storage.Node source){this.source=source;outputName=source.name;}}
+  boolean resolvingPaste;
+  void paste(){if(clipboard.isEmpty()){toast("Clipboard is empty");return;}if(resolvingPaste||busy){toast("Wait for the current operation to finish");return;}Storage.Node dest=panes[active].folder;List<Storage.Node> items=new ArrayList<>(clipboard);boolean move=clipboardMove;confirm((move?"Move":"Copy")+" "+items.size()+" items?","Destination: "+dest.name+"\nIf a name already exists, you can replace it, rename the incoming item, or skip it.",()->preparePaste(items,dest,move));}
+  void preparePaste(List<Storage.Node> items,Storage.Node dest,boolean move){
+   resolvingPaste=true;
+   io.submit(()->{try{
+    List<Storage.Node> current=storage.list(dest);Map<String,Storage.Node> byName=new HashMap<>();Set<String> reserved=new HashSet<>();for(Storage.Node n:current){byName.put(n.name,n);reserved.add(n.name);}
+    List<TransferPlan> plans=new ArrayList<>();Set<String> planned=new HashSet<>();
+    for(Storage.Node source:items){TransferPlan plan=new TransferPlan(source);Storage.Node existing=byName.get(source.name);if(existing!=null&&existing.key().equals(source.key()))plan.skip=true;else if(existing!=null)plan.existing=existing;else if(!planned.add(source.name)){plan.outputName=uniqueTransferName(source.name,reserved);reserved.add(plan.outputName);}else reserved.add(source.name);plans.add(plan);}
+    ui.post(()->resolvePasteConflicts(plans,dest,move,reserved,0));
+   }catch(Exception e){ui.post(()->{resolvingPaste=false;error(e);});}});
+  }
+  String uniqueTransferName(String original,Set<String> reserved){int dot=original.lastIndexOf('.');String stem=dot>0?original.substring(0,dot):original,extension=dot>0?original.substring(dot):"";for(int i=1;i<Integer.MAX_VALUE;i++){String candidate=stem+" ("+i+")"+extension;if(!reserved.contains(candidate))return candidate;}throw new IllegalStateException("Could not choose an unused destination name");}
+  void advancePasteConflict(List<TransferPlan> plans,Storage.Node dest,boolean move,Set<String> reserved,int next){ui.postDelayed(()->resolvePasteConflicts(plans,dest,move,reserved,next),100);}
+  void resolvePasteConflicts(List<TransferPlan> plans,Storage.Node dest,boolean move,Set<String> reserved,int start){
+   if(isFinishing()||isDestroyed()){resolvingPaste=false;return;}
+   int index=start;while(index<plans.size()&&(plans.get(index).skip||plans.get(index).existing==null))index++;
+   if(index>=plans.size()){resolvingPaste=false;startPasteJob(plans,dest,move);return;}
+   TransferPlan plan=plans.get(index);final int next=index+1;String message="“"+plan.source.name+"” already exists in "+dest.name+".\n\nReplace the existing item, rename the incoming item, or skip it?";
+   GlassDialog dialog=new GlassDialog.Builder(this).setTitle("Name already exists").setMessage(message).setPositiveButton("Replace",(d,w)->{plan.replace=true;advancePasteConflict(plans,dest,move,reserved,next);}).setNegativeButton("Rename",(d,w)->{plan.outputName=uniqueTransferName(plan.source.name,reserved);reserved.add(plan.outputName);advancePasteConflict(plans,dest,move,reserved,next);}).setNeutralButton("Skip",(d,w)->{plan.skip=true;advancePasteConflict(plans,dest,move,reserved,next);}).create();
+   dialog.setOnCancelListener(d->{resolvingPaste=false;toast("Transfer cancelled");});dialog.show();
+  }
+  void startPasteJob(List<TransferPlan> plans,Storage.Node dest,boolean move){
+   if(plans.stream().allMatch(plan->plan.skip)){toast("No items transferred");return;}
+   job("Transferring files",()->{int completed=0,skipped=0;for(TransferPlan plan:plans){if(cancel.get())throw new InterruptedIOException("Cancelled");if(plan.skip){skipped++;continue;}if(plan.replace&&plan.existing!=null)storage.replaceCopy(plan.source,dest,plan.existing,cancel,(bytes,name)->progress(bytes,name));else storage.copyAs(plan.source,dest,plan.outputName,cancel,(bytes,name)->progress(bytes,name));if(move){if(cancel.get())throw new InterruptedIOException("Cancelled");storage.delete(plan.source);}completed++;}clipboard.clear();ui.post(()->updateActionRailState());return "Transferred "+completed+(skipped>0?" · skipped "+skipped:"")+" item"+(completed==1?"":"s");});
+  }
  void newItem(){items("Create",new String[]{"Folder","Text file"},which->input(which==0?"New folder":"New file","Name",which==0?"New folder":"notes.txt",name->job("Creating",()->{storage.create(panes[active].folder,name,which==0);return "Created";})));}
  interface Choice{void pick(int i);}interface Value{void set(String s);}
   void input(String title,String hint,String value,Value action){EditText edit=new EditText(this);edit.setTextColor(Visuals.INK);edit.setHintTextColor(Visuals.MUTED);edit.setBackground(Visuals.glass(d(16),false));edit.setPadding(d(14),d(10),d(14),d(10));edit.setHint(hint);edit.setText(value);edit.setSelectAllOnFocus(!value.isEmpty());edit.setSingleLine();LinearLayout box=col();pad(box,20);box.addView(edit);AlertDialog dialog=new GlassDialog.Builder(this).setTitle(title).setView(box).setNegativeButton("Cancel",null).setPositiveButton("Continue",null).create();dialog.setOnShowListener(v->dialog.getButton(-1).setOnClickListener(b->{String text=edit.getText().toString();if(text.trim().isEmpty()){edit.setError("Required");return;}dialog.dismiss();action.set(text);}));dialog.show();}

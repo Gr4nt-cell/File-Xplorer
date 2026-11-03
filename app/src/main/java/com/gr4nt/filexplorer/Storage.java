@@ -55,13 +55,13 @@ public final class Storage {
   File f=new File(parent.path,name);
    if(directory?!f.mkdir():!f.createNewFile())throw new IOException("Could not create item");return node(f);
  }
- public void rename(Node n,String name)throws IOException{
+ public Node rename(Node n,String name)throws IOException{
   validName(name);
-   if(name.equals(n.name))return;
-    if(n.ftp()){String oldPath=FtpSessions.remotePath(n.path);int slash=oldPath.lastIndexOf('/');String parent=slash<=0?"/":oldPath.substring(0,slash);FTPClient client=ftp.open(n.path);try{if(!client.rename(oldPath,FtpSessions.childPath(parent,name)))throw new IOException("FTP server refused the rename: "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
-  if(n.saf()){if(DocumentsContract.renameDocument(resolver,Uri.parse(n.path),name)==null)throw new IOException("Rename refused");return;}
+   if(name.equals(n.name))return n;
+    if(n.ftp()){String oldPath=FtpSessions.remotePath(n.path);int slash=oldPath.lastIndexOf('/');String parent=slash<=0?"/":oldPath.substring(0,slash);FTPClient client=ftp.open(n.path);try{if(!client.rename(oldPath,FtpSessions.childPath(parent,name)))throw new IOException("FTP server refused the rename: "+client.getReplyString());return new Node(FtpSessions.nodePath(FtpSessions.sessionId(n.path),FtpSessions.childPath(parent,name)),name,n.dir,n.size,n.modified);}finally{FtpSessions.disconnect(client);}}
+  if(n.saf()){Uri renamed=DocumentsContract.renameDocument(resolver,Uri.parse(n.path),name);if(renamed==null)throw new IOException("Rename refused");return document(renamed);}
    File source=new File(n.path);File parent=source.getAbsoluteFile().getParentFile();if(parent==null)throw new IOException("Storage roots cannot be renamed");File target=new File(parent,name);if(target.exists())throw new IOException("An item named \""+name+"\" already exists");
-   try{Files.move(source.toPath(),target.toPath());}catch(IOException e){throw new IOException("Could not rename \""+n.name+"\" to \""+name+"\": "+e.getMessage(),e);}
+   try{Files.move(source.toPath(),target.toPath());return node(target);}catch(IOException e){throw new IOException("Could not rename \""+n.name+"\" to \""+name+"\": "+e.getMessage(),e);}
  }
  public void delete(Node n)throws IOException{
    if(n.ftp()){if(n.dir)for(Node child:list(n))delete(child);FTPClient client=ftp.open(n.path);try{String remote=FtpSessions.remotePath(n.path);boolean ok=n.dir?client.removeDirectory(remote):client.deleteFile(remote);if(!ok)throw new IOException("FTP server refused to delete "+n.name+": "+client.getReplyString());}finally{FtpSessions.disconnect(client);}return;}
@@ -71,15 +71,31 @@ public final class Storage {
   if(n.dir)for(Node child:list(n))delete(child);if(!new File(n.path).delete())throw new IOException("Could not delete "+n.name);
  }
  public Node copy(Node source,Node destination,AtomicBoolean cancelled,Progress progress)throws IOException{
-     if(source.dir&&!source.saf()&&!destination.saf()&&!source.ftp()&&!destination.ftp())FileSafety.rejectDescendant(new File(source.path),new File(destination.path,source.name));
+  return copyAs(source,destination,source.name,cancelled,progress);
+ }
+ public Node copyAs(Node source,Node destination,String outputName,AtomicBoolean cancelled,Progress progress)throws IOException{
+     validName(outputName);
+     if(source.dir&&!source.saf()&&!destination.saf()&&!source.ftp()&&!destination.ftp())FileSafety.rejectDescendant(new File(source.path),new File(destination.path,outputName));
   if(source.dir&&source.saf()&&destination.saf())rejectProviderDescendant(source,destination,cancelled);
   if(cancelled.get())throw new InterruptedIOException("Cancelled");
-  Node out=create(destination,source.name,source.dir);
+  Node out=create(destination,outputName,source.dir);
   try{
     if(source.dir){for(Node child:list(source)){if(!child.saf()&&Files.isSymbolicLink(new File(child.path).toPath()))throw new IOException("Symbolic links are not followed during recursive copy");copy(child,out,cancelled,progress);}}
    else try(InputStream in=read(source);OutputStream to=write(out)){byte[] buf=new byte[65536];int n;while((n=in.read(buf))!=-1){if(cancelled.get())throw new InterruptedIOException("Cancelled");to.write(buf,0,n);progress.bytes(n,source.name);}}
    return out;
   }catch(IOException e){try{delete(out);}catch(IOException ignored){}throw e;}
+ }
+ public Node replaceCopy(Node source,Node destination,Node existing,AtomicBoolean cancelled,Progress progress)throws IOException{
+  if(existing==null)throw new IOException("The existing destination item could not be found");
+  if(source.key().equals(existing.key()))return existing;
+  String backupName=".filexplorer-replaced-"+UUID.randomUUID().toString().replace("-","");
+  Node backup=rename(existing,backupName);
+  Node output;
+  try{output=copyAs(source,destination,existing.name,cancelled,progress);}
+  catch(IOException failure){try{rename(backup,existing.name);}catch(IOException rollback){failure.addSuppressed(rollback);}throw failure;}
+  try{delete(backup);}
+  catch(IOException cleanup){throw new IOException("The replacement was copied, but the previous item could not be removed from its temporary backup. Check the destination before retrying.",cleanup);}
+  return output;
  }
  void rejectProviderDescendant(Node source,Node destination,AtomicBoolean cancelled)throws IOException{
   Uri dest=Uri.parse(destination.path);String destId=dest.getAuthority()+":"+DocumentsContract.getDocumentId(dest);Set<String> seen=new HashSet<>();ArrayDeque<Node> todo=new ArrayDeque<>();todo.add(source);

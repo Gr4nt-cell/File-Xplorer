@@ -34,9 +34,16 @@ public final class Visuals {
    void radialEllipse(Canvas canvas,float cx,float cy,float rx,float ry,int color){canvas.save();canvas.translate(cx,cy);canvas.scale(rx,ry);p.setShader(new RadialGradient(0,0,1,new int[]{color,color&0x00ffffff,0x00000000},new float[]{0,.65f,1},Shader.TileMode.CLAMP));canvas.drawCircle(0,0,1,p);canvas.restore();}
     protected void onDraw(Canvas c){
       float w=getWidth(),h=getHeight();
-       int[] bg=dark?(mobile?new int[]{0xff111914,0xff141b16,0xff111914}:new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}):new int[]{0xffd6fff0,0xfff4fbfa,0xfffff0df};
-      p.setShader(new LinearGradient(0,0,w,h,bg,dark?null:new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
-     if(!dark){
+       int[] bg=dark?(mobile?new int[]{0xff111914,0xff141b16,0xff111914}:new int[]{0xff090a0d,0xff0b0c10,0xff090a0d}):mobile?new int[]{0xffb8d8ff,0xffe9ddff,0xffffd9e9,0xffd8f3e8}:new int[]{0xffd6fff0,0xfff4fbfa,0xfffff0df};
+      p.setShader(new LinearGradient(0,0,w,h,bg,dark?null:mobile?new float[]{0,.34f,.68f,1}:new float[]{0,.5f,1},Shader.TileMode.CLAMP));c.drawRect(0,0,w,h,p);
+     if(!dark&&mobile){
+        // Keep the light phone backdrop clearly colorful beneath the translucent glass:
+        // blue at the top, lilac through the center, pink along the right, mint below.
+        radialEllipse(c,w*.12f,h*.14f,w*.78f,h*.58f,0x66569dff);
+        radialEllipse(c,w*.9f,h*.48f,w*.62f,h*.64f,0x7cff7eb8);
+        radialEllipse(c,w*.64f,h*.94f,w*.72f,h*.46f,0x7774d9b5);
+        radialEllipse(c,w*.05f,h*.78f,w*.64f,h*.46f,0x45ffbd91);
+      }else if(!dark){
         // Mirrors the supplied iBrowser CSS backdrop: mint light from the upper-left,
         // warm apricot from the lower-right, over a pale diagonal three-stop gradient.
         radialEllipse(c,w,h,w,h,0xa6ffb37c);
